@@ -1,11 +1,14 @@
 \documentclass[12pt,a4paper]{report}
 
 % ========== PACKAGES ==========
-% NOTE: Compile with XeLaTeX or LuaLaTeX for Devanagari Hindi text support
-% If using pdflatex, replace Devanagari examples with romanized equivalents
+% Compile with XeLaTeX or LuaLaTeX for Devanagari support (Overleaf: Menu -> Compiler -> XeLaTeX)
 \usepackage{fontspec}
-\setmainfont{Times New Roman}
-\newfontfamily\hindifont{Noto Sans Devanagari}[Script=Devanagari]
+\usepackage{polyglossia}
+\setmainlanguage{english}
+\setotherlanguage{hindi}
+% Use free fonts available on all systems and Overleaf
+\setmainfont{FreeSerif}
+\newfontfamily\hindifont{FreeSerif}[Script=Devanagari]
 \usepackage[top=1in, bottom=1in, left=1.25in, right=1in]{geometry}
 \usepackage{graphicx}
 \usepackage{setspace}
@@ -249,11 +252,11 @@ Natural Language Processing (NLP) has witnessed transformative progress over the
 \textbf{Coreference resolution} is the task of identifying all expressions in a text that refer to the same real-world entity and grouping them into \textit{coreference chains} (also called entity clusters). Consider the following example in Hindi:
 
 \begin{center}
-\textit{``राम स्कूल गया। वह खुश था।''}\\
-(राम विद्यालय गया। वह प्रसन्न था।)
+\textit{``{\hindifont राम स्कूल गया। वह खुश था।}''}\\
+({\hindifont राम विद्यालय गया। वह प्रसन्न था।})
 \end{center}
 
-A coreference resolver must identify that \textit{राम} and \textit{वह} (he) refer to the same person and place them in the same cluster. This seemingly simple inference requires the system to understand pronouns, nominal phrases, discourse structure, and the morphological properties of a highly inflectional language. It is a prerequisite for high-quality machine translation, question answering, dialogue systems, information extraction, and text summarisation.
+A coreference resolver must identify that \textit{{\hindifont राम}} and \textit{{\hindifont वह}} (he) refer to the same person and place them in the same cluster. This seemingly simple inference requires the system to understand pronouns, nominal phrases, discourse structure, and the morphological properties of a highly inflectional language. It is a prerequisite for high-quality machine translation, question answering, dialogue systems, information extraction, and text summarisation.
 
 \section{The Challenge for Hindi}
 
@@ -837,27 +840,27 @@ Phase 2 (hybrid, LR + Union-Find) & moderate & moderate & moderate \\
 
 \textbf{Input document excerpt:}
 \begin{center}
-\textit{``राम स्कूल गया। वह बहुत खुश था। उसने अपने दोस्तों से बात की।''}\\
-(राम विद्यालय गया। वह बहुत प्रसन्न था। उसने अपने मित्रों से बात की।)
+\textit{``{\hindifont राम स्कूल गया। वह बहुत खुश था। उसने अपने दोस्तों से बात की।}''}\\
+({\hindifont राम विद्यालय गया। वह बहुत प्रसन्न था। उसने अपने मित्रों से बात की।})
 \end{center}
 
 \textbf{Gold coreference clusters:}
 \begin{itemize}
-    \item Cluster 1: \{राम, वह, उसने\}
+    \item Cluster 1: \{{\hindifont राम, वह, उसने}\}
 \end{itemize}
 
 \textbf{System predicted clusters:}
 \begin{itemize}
-    \item Cluster 1 (correct): \{राम, वह, उसने\} --- pronoun flags and clause heuristics correctly triggered
+    \item Cluster 1 (correct): \{{\hindifont राम, वह, उसने}\} --- pronoun flags and clause heuristics correctly triggered
 \end{itemize}
 
 \textbf{Failure example:}
 \begin{center}
-\textit{``सीमा और प्रिया दोनों स्कूल गईं। वह बहुत थक गई थी।''}\\
-(सीमा और प्रिया दोनों विद्यालय गईं। वह बहुत थक गई थी।)
+\textit{``{\hindifont सीमा और प्रिया दोनों स्कूल गईं। वह बहुत थक गई थी।}''}\\
+({\hindifont सीमा और प्रिया दोनों विद्यालय गईं। वह बहुत थक गई थी।})
 \end{center}
 
-\textbf{System predicted:} \{सीमा, वह\} --- the system incorrectly resolved the pronoun to the first-mentioned entity rather than recognising the ambiguity or the plural-to-singular mismatch.
+\textbf{System predicted:} \{{\hindifont सीमा, वह}\} --- the system incorrectly resolved the pronoun to the first-mentioned entity rather than recognising the ambiguity or the plural-to-singular mismatch.
 
 \noindent This failure case illustrates the system's inability to handle number agreement checking, which requires deeper morphological analysis than our current feature set provides.
 
@@ -1228,13 +1231,13 @@ Each annotated document in the manually created dataset follows the JSON schema 
 \begin{lstlisting}[language=Python, caption={Dataset Annotation Schema}]
 {
   "doc_id": "doc_001",
-  "text": "राम स्कूल गया। वह खुश था।",
+  "text": "Ram school gaya. Vah khush tha.",
   "mentions": [
     {
       "mention_id": "m1",
       "start": 0,
       "end": 2,
-      "text": "राम",
+      "text": "Ram",
       "mention_type": "proper_noun",
       "cluster_id": "C1"
     },
@@ -1242,7 +1245,7 @@ Each annotated document in the manually created dataset follows the JSON schema 
       "mention_id": "m2",
       "start": 18,
       "end": 20,
-      "text": "वह",
+      "text": "Vah",
       "mention_type": "pronoun",
       "cluster_id": "C1"
     }
