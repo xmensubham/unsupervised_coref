@@ -1,9 +1,11 @@
 \documentclass[12pt,a4paper]{report}
 
 % ========== PACKAGES ==========
-\usepackage[utf8]{inputenc}
-\usepackage[T1]{fontenc}
-\usepackage{times}
+% NOTE: Compile with XeLaTeX or LuaLaTeX for Devanagari Hindi text support
+% If using pdflatex, replace Devanagari examples with romanized equivalents
+\usepackage{fontspec}
+\setmainfont{Times New Roman}
+\newfontfamily\hindifont{Noto Sans Devanagari}[Script=Devanagari]
 \usepackage[top=1in, bottom=1in, left=1.25in, right=1in]{geometry}
 \usepackage{graphicx}
 \usepackage{setspace}
@@ -187,7 +189,7 @@ Place: Kokrajhar, BTAD, Assam
 
 \noindent We would also like to extend our heartfelt thanks to \textbf{Dr. Apurbalal Senapati}, Head of the Department of Computer Science and Engineering, \textbf{Central Institute of Technology Kokrajhar}, for providing us with the necessary facilities, academic support, and a conducive environment for learning and research. We are sincerely grateful to all the faculty members of the \textbf{Department of Computer Science and Engineering} for their valuable suggestions, encouragement, and insightful feedback during different stages of this project.\\[0.5cm]
 
-\noindent We would like to acknowledge the cooperation, dedication, and teamwork of all our group members, whose collective efforts, coordination, and commitment made this project possible. The manual annotation effort --- creating a coreference dataset of 76 documents and 548 mention annotations from scratch --- would not have been possible without the sustained commitment of every team member. We are also deeply thankful to our family members and friends for their constant motivation, encouragement, understanding, and moral support throughout this journey.\\[0.5cm]
+\noindent We would like to acknowledge the cooperation, dedication, and teamwork of all our group members, whose collective efforts, coordination, and commitment made this project possible. The manual annotation effort --- creating a coreference dataset of 1248 mention annotations from scratch --- would not have been possible without the sustained commitment of every team member. We are also deeply thankful to our family members and friends for their constant motivation, encouragement, understanding, and moral support throughout this journey.\\[0.5cm]
 
 \noindent Finally, we express our heartfelt gratitude to the Almighty for blessing us with the strength, wisdom, and perseverance to successfully complete this project work.
 
@@ -210,7 +212,7 @@ Nipujyoti Rabha (202202021053)
 
 \noindent The research journey involved two major phases. In the \textbf{first phase}, a custom BERT-style transformer was trained from scratch using Masked Language Modeling (MLM) on approximately 172,000 Hindi Wikipedia documents sourced from Kaggle, with a SentencePiece BPE tokenizer (vocabulary size: 32,000). While initial embedding experiments showed promising semantic clustering, the approach fundamentally failed at coreference resolution: pronouns such as \textit{vah} (he/she), \textit{usne} (he/she did), and \textit{vahaan} (there) were not correctly linked to their antecedents. This failure revealed that coreference resolution requires more than semantic similarity --- it demands mention detection, discourse understanding, morphological analysis, and antecedent ranking. This phase was formally abandoned.
 
-\noindent In the \textbf{second phase}, the methodology pivoted to a supervised hybrid architecture. The AI4Bharat \textbf{IndicBERTv2 (MLM-only)} pretrained model was adopted to generate contextual mention representations, taking advantage of its existing Hindi linguistic knowledge. Since no suitable Hindi coreference dataset was available, a \textbf{custom annotated dataset} was created manually, comprising \textbf{76 documents} and \textbf{548 mention annotations} with cluster IDs, mention spans, and mention types. This dataset was used to train a \textbf{pairwise mention classifier} combining IndicBERT contextual embeddings with handcrafted Hindi-specific features including pronoun detection, plural pronoun handling, object pronoun signals, clause heuristics, and mention compatibility scores. A \textbf{Logistic Regression} classifier with balanced class weighting was trained on these features, achieving approximately \textbf{82\% pairwise classification accuracy}. Predicted coreferent pairs were then reconstructed into entity clusters using a \textbf{Union-Find} algorithm. The system was evaluated using MUC coreference scoring and pairwise classification metrics (precision, recall, F1).
+\noindent In the \textbf{second phase}, the methodology pivoted to a supervised hybrid architecture. The AI4Bharat \textbf{IndicBERTv2 (MLM-only)} pretrained model was adopted to generate contextual mention representations, taking advantage of its existing Hindi linguistic knowledge. Since no suitable Hindi coreference dataset was available, a \textbf{custom annotated dataset} was created manually, comprising \textbf{1248 mention annotations} with cluster IDs, mention spans, and mention types. This dataset was used to train a \textbf{pairwise mention classifier} combining IndicBERT contextual embeddings with handcrafted Hindi-specific features including pronoun detection, plural pronoun handling, object pronoun signals, clause heuristics, and mention compatibility scores. A \textbf{Logistic Regression} classifier with balanced class weighting was trained on these features, achieving approximately \textbf{82\% pairwise classification accuracy}. Predicted coreferent pairs were then reconstructed into entity clusters using a \textbf{Union-Find} algorithm. The system was evaluated using MUC coreference scoring and pairwise classification metrics (precision, recall, F1).
 
 \noindent The project demonstrates the feasibility of building a working coreference pipeline for a low-resource language through careful feature engineering, dataset creation, and informed model selection. Key limitations --- including the small dataset size, manual mention input, and the ceiling imposed by logistic regression --- are honestly characterised, along with a roadmap for future improvements.
 
@@ -247,11 +249,11 @@ Natural Language Processing (NLP) has witnessed transformative progress over the
 \textbf{Coreference resolution} is the task of identifying all expressions in a text that refer to the same real-world entity and grouping them into \textit{coreference chains} (also called entity clusters). Consider the following example in Hindi:
 
 \begin{center}
-\textit{``Ram school gaya. Vah khush tha.''}\\
-(Ram went to school. He was happy.)
+\textit{``राम स्कूल गया। वह खुश था।''}\\
+(राम विद्यालय गया। वह प्रसन्न था।)
 \end{center}
 
-A coreference resolver must identify that \textit{Ram} and \textit{Vah} (he) refer to the same person and place them in the same cluster. This seemingly simple inference requires the system to understand pronouns, nominal phrases, discourse structure, and the morphological properties of a highly inflectional language. It is a prerequisite for high-quality machine translation, question answering, dialogue systems, information extraction, and text summarisation.
+A coreference resolver must identify that \textit{राम} and \textit{वह} (he) refer to the same person and place them in the same cluster. This seemingly simple inference requires the system to understand pronouns, nominal phrases, discourse structure, and the morphological properties of a highly inflectional language. It is a prerequisite for high-quality machine translation, question answering, dialogue systems, information extraction, and text summarisation.
 
 \section{The Challenge for Hindi}
 
@@ -281,7 +283,7 @@ Following this failure, the project pivoted to a supervised hybrid architecture.
 
 \begin{enumerate}
     \item Adopt \textbf{IndicBERTv2 (MLM-only)} from AI4Bharat as the contextual embedding backbone, leveraging its existing Hindi linguistic knowledge instead of training from scratch.
-    \item \textbf{Manually create an annotated coreference dataset} of 76 documents and 548 mention annotations, since no suitable Hindi dataset was available.
+    \item \textbf{Manually create an annotated coreference dataset} of 1248 mention annotations, since no suitable Hindi dataset was available.
     \item Formulate coreference as a \textbf{pairwise mention classification} problem: for each pair of mentions, predict whether they are coreferent.
     \item Combine IndicBERT embeddings with \textbf{hand-crafted Hindi linguistic features} (pronoun detection, plurality, clause heuristics, mention compatibility) as input to a \textbf{Logistic Regression} classifier.
     \item Reconstruct entity clusters from predicted coreferent pairs using a \textbf{Union-Find} algorithm.
@@ -293,7 +295,7 @@ The specific contributions of this project are:
 
 \begin{itemize}
     \item A documented exploration and principled failure analysis of the scratch-BERT unsupervised clustering approach for Hindi coreference.
-    \item A manually annotated Hindi coreference dataset of 76 documents and 548 mention spans.
+    \item A manually annotated Hindi coreference dataset of 1248 mention spans.
     \item A working end-to-end Hindi coreference pipeline combining IndicBERTv2 embeddings, Hindi-specific linguistic features, logistic regression pairwise classification, and Union-Find cluster reconstruction.
     \item An honest empirical evaluation of the system including pairwise classification metrics (precision, recall, F1) and MUC coreference scoring.
     \item Identification of key bottlenecks and a concrete roadmap for future improvement.
@@ -354,7 +356,7 @@ From an academic perspective, this project addresses:
 \begin{enumerate}
     \item \textbf{Investigate the limits of unsupervised approaches:} Empirically evaluate whether a custom scratch-trained BERT model with embedding-based clustering can resolve coreferences in Hindi, and document why it fails.
     \item \textbf{Build a functional Hindi coreference pipeline:} Develop an end-to-end system capable of taking Hindi text with mention spans as input and producing entity clusters as output.
-    \item \textbf{Create a Hindi coreference dataset:} Manually annotate a corpus of 76 Hindi documents with 548 coreference mention spans, cluster IDs, and mention types, addressing the resource scarcity problem.
+    \item \textbf{Create a Hindi coreference dataset:} Manually annotate a corpus of Hindi documents with 1248 coreference mention spans, cluster IDs, and mention types, addressing the resource scarcity problem.
     \item \textbf{Design a hybrid architecture:} Combine the contextual representation power of IndicBERTv2 with handcrafted Hindi-specific linguistic features for pairwise mention classification.
 \end{enumerate}
 
@@ -567,9 +569,7 @@ Since no suitable Hindi coreference dataset was publicly available at the requir
 \hline
 \textbf{Property} & \textbf{Value} \\
 \hline
-Total documents & 76 \\
-Total mention annotations & 548 \\
-Average mentions per document & 7.2 \\
+Total mention annotations & 1248 \\
 Annotation fields & mention span, cluster ID, mention type, document context \\
 Mention types & proper noun, common noun, pronoun, nominal phrase \\
 Domain & news, Wikipedia excerpts, short narratives \\
@@ -759,7 +759,7 @@ Discourse unawareness & No mechanism to track entities across sentence boundarie
 \hline
 Contextual encoder & IndicBERTv2 (MLM-only, AI4Bharat) \\
 Mention representation & Mean pooling of last-layer hidden states over span tokens \\
-Dataset & 76 manually annotated Hindi documents, 548 mention spans \\
+Dataset & manually annotated Hindi documents, 1248 mention spans \\
 Total mention pairs & Generated from all within-document mention combinations \\
 Positive pairs (coreferent) & Minority class (dataset is naturally imbalanced) \\
 Negative pairs (non-coreferent) & Majority class \\
@@ -831,33 +831,33 @@ Phase 2 (hybrid, LR + Union-Find) & moderate & moderate & moderate \\
 \end{tabular}
 \end{table}
 
-\noindent \textbf{Interpretation:} The Phase~2 system shows a meaningful improvement over Phase~1 in cluster quality, though absolute MUC F1 remains moderate. This is expected given the small dataset size (76 documents), the absence of automatic mention detection, and the ceiling imposed by logistic regression on high-dimensional embedding features. B$^3$ and CEAF metrics were not computed (see limitations in Chapter~6).
+\noindent \textbf{Interpretation:} The Phase~2 system shows a meaningful improvement over Phase~1 in cluster quality, though absolute MUC F1 remains moderate. This is expected given the small dataset size, the absence of automatic mention detection, and the ceiling imposed by logistic regression on high-dimensional embedding features. B$^3$ and CEAF metrics were not computed (see limitations in Chapter~6).
 
 \subsection{Qualitative Example}
 
 \textbf{Input document excerpt:}
 \begin{center}
-\textit{``Ram school gaya. Vah bahut khush tha. Usne apne doston se baat ki.''}\\
-(Ram went to school. He was very happy. He talked to his friends.)
+\textit{``राम स्कूल गया। वह बहुत खुश था। उसने अपने दोस्तों से बात की।''}\\
+(राम विद्यालय गया। वह बहुत प्रसन्न था। उसने अपने मित्रों से बात की।)
 \end{center}
 
 \textbf{Gold coreference clusters:}
 \begin{itemize}
-    \item Cluster 1: \{Ram, Vah, Usne\}
+    \item Cluster 1: \{राम, वह, उसने\}
 \end{itemize}
 
 \textbf{System predicted clusters:}
 \begin{itemize}
-    \item Cluster 1 (correct): \{Ram, Vah, Usne\} --- pronoun flags and clause heuristics correctly triggered
+    \item Cluster 1 (correct): \{राम, वह, उसने\} --- pronoun flags and clause heuristics correctly triggered
 \end{itemize}
 
 \textbf{Failure example:}
 \begin{center}
-\textit{``Seema aur Priya dono school gayi. Vah bahut thak gayi thi.''}\\
-(Seema and Priya both went to school. She was very tired.)
+\textit{``सीमा और प्रिया दोनों स्कूल गईं। वह बहुत थक गई थी।''}\\
+(सीमा और प्रिया दोनों विद्यालय गईं। वह बहुत थक गई थी।)
 \end{center}
 
-\textbf{System predicted:} \{Seema, Vah\} --- the system incorrectly resolved the pronoun to the first-mentioned entity rather than recognising the ambiguity or the plural-to-singular mismatch.
+\textbf{System predicted:} \{सीमा, वह\} --- the system incorrectly resolved the pronoun to the first-mentioned entity rather than recognising the ambiguity or the plural-to-singular mismatch.
 
 \noindent This failure case illustrates the system's inability to handle number agreement checking, which requires deeper morphological analysis than our current feature set provides.
 
@@ -886,7 +886,7 @@ Key libraries & transformers, torch, sklearn, sentencepiece, numpy, pandas \\
 
 \section{Summary of Work}
 
-This project investigated Hindi coreference resolution for a low-resource NLP setting through a two-phase research journey. The first phase --- pretraining a compact BERT-style model from scratch on 172,000 Hindi Wikipedia documents and applying embedding-based clustering for coreference --- failed systematically, yielding an important negative result: \textbf{semantic similarity is not a proxy for coreference}. The second phase built a functional hybrid pipeline combining IndicBERTv2 contextual embeddings, handcrafted Hindi linguistic features, a Logistic Regression pairwise classifier, and Union-Find cluster reconstruction. This system was trained and evaluated on a manually created dataset of 76 documents and 548 mention annotations.
+This project investigated Hindi coreference resolution for a low-resource NLP setting through a two-phase research journey. The first phase --- pretraining a compact BERT-style model from scratch on 172,000 Hindi Wikipedia documents and applying embedding-based clustering for coreference --- failed systematically, yielding an important negative result: \textbf{semantic similarity is not a proxy for coreference}. The second phase built a functional hybrid pipeline combining IndicBERTv2 contextual embeddings, handcrafted Hindi linguistic features, a Logistic Regression pairwise classifier, and Union-Find cluster reconstruction. This system was trained and evaluated on a manually created dataset of 1248 mention annotations.
 
 The final system achieved approximately 82\% overall pairwise classification accuracy, with moderate performance on the (minority) coreferent class. MUC coreference scoring showed a meaningful improvement over the failed Phase~1 baseline. An ablation study confirmed that the handcrafted Hindi linguistic features contribute approximately 11 percentage points of accuracy improvement over embedding-only features, validating the hybrid design.
 
@@ -894,7 +894,7 @@ The final system achieved approximately 82\% overall pairwise classification acc
 
 \begin{itemize}
     \item \textbf{Documented failure analysis} of scratch-BERT unsupervised clustering for Hindi coreference, with a principled explanation of why embedding similarity is insufficient.
-    \item \textbf{Manually annotated dataset} of 76 Hindi documents with 548 coreference mention spans --- a genuine low-resource NLP contribution.
+    \item \textbf{Manually annotated dataset} of Hindi documents with 1248 coreference mention spans --- a genuine low-resource NLP contribution.
     \item \textbf{Working end-to-end pipeline} combining IndicBERTv2, Hindi linguistic feature engineering, logistic regression, and Union-Find clustering.
     \item \textbf{Empirical validation} that language-specific pretrained models (IndicBERTv2) outperform scratch-trained models for Hindi NLP tasks even at small fine-tuning scale.
     \item \textbf{Feature importance evidence} that handcrafted pronoun, plurality, and clause heuristics add significant value over embedding similarity alone in a low-resource setting.
@@ -905,7 +905,7 @@ The final system achieved approximately 82\% overall pairwise classification acc
 \subsection{Dataset Limitations}
 
 \begin{enumerate}
-    \item \textbf{Small size:} 76 documents and 548 mention spans is an extremely small dataset for a supervised machine learning task. The model's generalisation beyond the annotated domain is uncertain.
+    \item \textbf{Small size:} 1248 mention spans is an extremely small dataset for a supervised machine learning task. The model's generalisation beyond the annotated domain is uncertain.
     \item \textbf{No inter-annotator agreement:} The annotation was performed without formal inter-annotator agreement measurement (e.g., Cohen's Kappa). Annotation inconsistencies may have introduced noise into the training labels.
     \item \textbf{Domain bias:} The annotated corpus is skewed towards formal written Hindi (news and Wikipedia). Conversational, dialectal, and code-mixed Hindi are not represented.
     \item \textbf{Singleton mentions:} The handling of singleton entity mentions (mentions that do not corefer with any other mention) was not systematically evaluated.
@@ -931,7 +931,7 @@ The current system requires \textbf{gold mention spans as input} --- mentions ar
 
 \begin{enumerate}
     \item \textbf{No B$^3$ or CEAF scoring:} Only MUC and pairwise metrics were computed. The standard CoNLL F1 score (average of MUC, B$^3$, CEAF) was not reported, making direct comparison with published systems difficult.
-    \item \textbf{Small test set:} Evaluation on held-out folds of a 76-document dataset yields high-variance estimates of true system performance.
+    \item \textbf{Small test set:} Evaluation on held-out folds of the annotated dataset yields high-variance estimates of true system performance.
     \item \textbf{No comparison with rule-based baseline:} A simple rule-based baseline (e.g., link all pronouns to the nearest preceding named entity) was not implemented, making it difficult to quantify the value added by the machine learning component.
 \end{enumerate}
 
@@ -978,7 +978,7 @@ Replacing Logistic Regression with a \textbf{fine-tuned neural pairwise scorer} 
 \section{Dataset Expansion and Quality Improvement}
 
 \begin{itemize}
-    \item \textbf{Scale annotation:} Expand the dataset from 76 to at least 300--500 documents through continued manual annotation or crowdsourcing with quality control.
+    \item \textbf{Scale annotation:} Expand the dataset to at least 300--500 documents through continued manual annotation or crowdsourcing with quality control.
     \item \textbf{Inter-annotator agreement:} Implement a formal dual-annotation and reconciliation procedure to measure and improve annotation consistency (target Cohen's Kappa $\geq 0.7$).
     \item \textbf{Domain diversification:} Add conversational Hindi (social media, transcribed speech), technical Hindi, and regional variety text.
     \item \textbf{Singleton annotation:} Explicitly annotate singleton mentions to enable evaluation of mention recall independently of cluster quality.
@@ -1228,13 +1228,13 @@ Each annotated document in the manually created dataset follows the JSON schema 
 \begin{lstlisting}[language=Python, caption={Dataset Annotation Schema}]
 {
   "doc_id": "doc_001",
-  "text": "Ram school gaya. Vah khush tha...",
+  "text": "राम स्कूल गया। वह खुश था।",
   "mentions": [
     {
       "mention_id": "m1",
       "start": 0,
       "end": 2,
-      "text": "Ram",
+      "text": "राम",
       "mention_type": "proper_noun",
       "cluster_id": "C1"
     },
@@ -1242,7 +1242,7 @@ Each annotated document in the manually created dataset follows the JSON schema 
       "mention_id": "m2",
       "start": 18,
       "end": 20,
-      "text": "Vah",
+      "text": "वह",
       "mention_type": "pronoun",
       "cluster_id": "C1"
     }
