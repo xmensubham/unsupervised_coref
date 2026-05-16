@@ -1,481 +1,445 @@
-% ============================================================
-%  HINDI COREFERENCE RESOLUTION — BEAMER PRESENTATION
-%  B.Tech Final Year Project | CIT Kokrajhar | May 2026
-%  Rebuilt: proper font sizing, clean layout, readable slides
-% ============================================================
 \documentclass[aspectratio=169]{beamer}
+\usetheme{metropolis}
 
-% ── THEME ──────────────────────────────────────────────────
-\usetheme{Madrid}
-\usecolortheme{whale}
-\setbeamercolor{palette primary}  {bg=blue!75!black, fg=white}
-\setbeamercolor{palette secondary}{bg=blue!55!black, fg=white}
-\setbeamercolor{palette tertiary} {bg=blue!35!black, fg=white}
-\setbeamercolor{frametitle}       {bg=blue!75!black, fg=white}
-\setbeamercolor{title}            {bg=blue!75!black, fg=white}
-\setbeamercolor{block title}      {bg=blue!65!black, fg=white}
-\setbeamercolor{block body}       {bg=blue!5!white}
-\setbeamercolor{alerted text}     {fg=red!70!black}
-\setbeamercolor{example text}     {fg=green!45!black}
-
-% ── PACKAGES ───────────────────────────────────────────────
 \usepackage[utf8]{inputenc}
-\usepackage[T1]{fontenc}
-\usepackage{lmodern}
-\usepackage{amsmath,amssymb}
 \usepackage{graphicx}
 \usepackage{booktabs}
-\usepackage{array}
 \usepackage{xcolor}
 \usepackage{tikz}
-\usetikzlibrary{arrows.meta,positioning,shapes.geometric}
-\usepackage{listings}
+\usepackage{amsmath}
+\usepackage{amssymb}
 \usepackage{tcolorbox}
-\tcbuselibrary{skins}
+\usepackage{array}
+\usepackage{listings}
+\usetikzlibrary{arrows.meta, positioning, calc, shapes.geometric}
 
-% ── GLOBAL FONT SIZE  (body = 11pt, comfortable to read) ───
-\setbeamerfont{normal text}     {size=\normalsize}
-\setbeamerfont{frametitle}      {size=\large,  series=\bfseries}
-\setbeamerfont{block title}     {size=\normalsize, series=\bfseries}
-\setbeamerfont{block body}      {size=\normalsize}
-\setbeamerfont{itemize/enumerate body}{size=\normalsize}
-\setbeamerfont{itemize/enumerate subbody}{size=\small}
+%% ── COLOUR PALETTE ──────────────────────────────────────────
+\definecolor{midnightblue}{RGB}{15, 28, 60}
+\definecolor{techblue}{RGB}{32, 103, 178}
+\definecolor{iceblue}{RGB}{180, 210, 245}
+\definecolor{accentcyan}{RGB}{0, 188, 212}
+\definecolor{accentgreen}{RGB}{76, 175, 80}
+\definecolor{accentorange}{RGB}{255, 152, 0}
+\definecolor{softgray}{RGB}{240, 242, 246}
+\definecolor{darktext}{RGB}{20, 30, 55}
 
-% ── TCOLORBOX HELPERS ──────────────────────────────────────
-\newtcolorbox{bluebox}[1]{
-  colback=blue!6!white, colframe=blue!60!black,
-  fonttitle=\bfseries\normalsize, title=#1,
-  boxrule=0.8pt, arc=4pt, left=6pt, right=6pt,
-  top=4pt, bottom=4pt}
+%% ── METROPOLIS COLOURS ──────────────────────────────────────
+\setbeamercolor{normal text}    {fg=darktext, bg=white}
+\setbeamercolor{frametitle}     {fg=white, bg=midnightblue}
+\setbeamercolor{title separator}{fg=accentcyan}
+\setbeamercolor{progress bar}   {fg=accentcyan, bg=iceblue}
+\setbeamerfont{frametitle}      {size=\large, series=\bfseries}
+\setbeamerfont{normal text}     {size=\small}
 
-\newtcolorbox{greenbox}[1]{
-  colback=green!7!white, colframe=green!50!black,
-  fonttitle=\bfseries\normalsize, title=#1,
-  boxrule=0.8pt, arc=4pt, left=6pt, right=6pt,
-  top=4pt, bottom=4pt}
-
-\newtcolorbox{orangebox}[1]{
-  colback=orange!8!white, colframe=orange!65!black,
-  fonttitle=\bfseries\normalsize, title=#1,
-  boxrule=0.8pt, arc=4pt, left=6pt, right=6pt,
-  top=4pt, bottom=4pt}
-
-% ── LISTINGS ───────────────────────────────────────────────
-\lstset{
-  language=Python,
-  basicstyle=\ttfamily\small,
-  breaklines=true,
-  frame=single,
-  backgroundcolor=\color{gray!8},
-  keywordstyle=\color{blue!70!black}\bfseries,
-  commentstyle=\color{green!40!black}\itshape,
-  stringstyle=\color{orange!70!black},
-  numbers=none, tabsize=2,
-  xleftmargin=4pt, xrightmargin=4pt
+%% ── TCOLORBOX STYLES ────────────────────────────────────────
+\tcbuselibrary{skins, breakable}
+\tcbset{
+  nbox/.style={
+    colback=midnightblue!8, colframe=techblue,
+    fonttitle=\bfseries\small, title=#1,
+    left=4pt, right=4pt, top=3pt, bottom=3pt, boxrule=1.2pt, arc=3pt},
+  rbox/.style={
+    colback=accentgreen!10, colframe=accentgreen,
+    fonttitle=\bfseries\small, title=#1,
+    left=4pt, right=4pt, top=3pt, bottom=3pt, boxrule=1.2pt, arc=3pt},
+  wbox/.style={
+    colback=accentorange!10, colframe=accentorange,
+    fonttitle=\bfseries\small, title=#1,
+    left=4pt, right=4pt, top=3pt, bottom=3pt, boxrule=1pt, arc=3pt},
+  gbox/.style={
+    colback=softgray, colframe=darktext!30,
+    fonttitle=\bfseries\small, title=#1,
+    left=4pt, right=4pt, top=3pt, bottom=3pt, boxrule=0.8pt, arc=3pt}
 }
 
-% ── FOOTER ─────────────────────────────────────────────────
+%% ── CODE LISTINGS ───────────────────────────────────────────
+\lstset{
+  language=Python,
+  basicstyle=\ttfamily\scriptsize,
+  breaklines=true,
+  frame=single,
+  backgroundcolor=\color{softgray},
+  keywordstyle=\color{techblue}\bfseries,
+  commentstyle=\color{accentgreen!70!black}\itshape,
+  stringstyle=\color{accentorange!80!black},
+  numbers=none, tabsize=2,
+  xleftmargin=3pt, xrightmargin=3pt
+}
+
+%% ── METADATA ────────────────────────────────────────────────
+\title{Hindi Coreference Resolution\\for Low-Resource NLP}
+\subtitle{Using Transformer-Based Hybrid Approaches\\[2pt]
+          {\small B.Tech Final Year Project --- CIT Kokrajhar, May 2026}}
+\author{Himraj Doley \quad Subham Saha \quad Mohd Zaid \quad Nipujyoti Rabha}
+\institute{Dept.\ of Computer Science \& Engineering,
+           Central Institute of Technology Kokrajhar\\
+           \textit{Supervisor: Dr.\ Apurbalal Senapati (HOD, CSE)}}
+\date{}
+
 \setbeamertemplate{navigation symbols}{}
-\setbeamertemplate{footline}{
-  \leavevmode\hbox{%
-    \begin{beamercolorbox}[wd=.35\paperwidth,ht=2.4ex,dp=1ex,center]
-      {palette secondary}\tiny\insertshortauthor
-    \end{beamercolorbox}%
-    \begin{beamercolorbox}[wd=.40\paperwidth,ht=2.4ex,dp=1ex,center]
-      {palette tertiary}\tiny Hindi Coreference Resolution
-    \end{beamercolorbox}%
-    \begin{beamercolorbox}[wd=.25\paperwidth,ht=2.4ex,dp=1ex,right]
-      {palette primary}\tiny
-      \insertframenumber\,/\,\inserttotalframenumber\hspace{6pt}
-    \end{beamercolorbox}}}
 
-% ── METADATA ───────────────────────────────────────────────
-\title[Hindi Coreference -- B.Tech Presentation]{%
-  \textbf{Hindi Coreference Resolution}\\[4pt]
-  for Low-Resource NLP Using\\
-  Transformer-Based Hybrid Approaches}
-\subtitle{B.Tech Final Year Project Presentation}
-\author[Doley \textbar{} Saha \textbar{} Zaid \textbar{} Rabha]{%
-  Himraj Doley\quad Subham Saha\quad Mohd Zaid\quad Nipujyoti Rabha}
-\institute[CIT Kokrajhar]{%
-  Dept.\ of Computer Science \& Engineering\\
-  Central Institute of Technology Kokrajhar\\
-  \smallskip\textit{Supervisor: Dr.\ Apurbalal Senapati (HOD, CSE)}}
-\date{May 2026}
-
-% ============================================================
 \begin{document}
-% ============================================================
+\maketitle
 
-% ── TITLE ───────────────────────────────────────────────────
-\begin{frame}
-  \titlepage
-\end{frame}
-
-% ── OUTLINE ─────────────────────────────────────────────────
+% ════════════════════════════════════════════════════════
+%  OUTLINE
+% ════════════════════════════════════════════════════════
 \begin{frame}{Presentation Outline}
   \begin{columns}[T]
     \column{0.48\textwidth}
-      \tableofcontents[sections={1-5}]
+      \begin{tcolorbox}[nbox={Sections 1 – 5}]
+        \small
+        \textbf{1.} Introduction\\[3pt]
+        \textbf{2.} Motivation \& Objectives\\[3pt]
+        \textbf{3.} Related Work\\[3pt]
+        \textbf{4.} Methodology\\[3pt]
+        \textbf{5.} Experimental Results
+      \end{tcolorbox}
     \column{0.48\textwidth}
-      \tableofcontents[sections={6-9}]
+      \begin{tcolorbox}[nbox={Sections 6 – 9}]
+        \small
+        \textbf{6.} Contributions\\[3pt]
+        \textbf{7.} Conclusion \& Limitations\\[3pt]
+        \textbf{8.} Future Work\\[3pt]
+        \textbf{9.} References
+      \end{tcolorbox}
   \end{columns}
 \end{frame}
 
-
-% ============================================================
+% ════════════════════════════════════════════════════════
 %  SECTION 1 — INTRODUCTION
-% ============================================================
+% ════════════════════════════════════════════════════════
 \section{Introduction}
 
-% ── Slide 1-1 ───────────────────────────────────────────────
 \begin{frame}{What is Coreference Resolution?}
-  \begin{bluebox}{Task Definition}
+  \begin{tcolorbox}[nbox={Task Definition}]
     Identify \textbf{all referring expressions} in a text that point to the
     \textbf{same real-world entity} and group them into
     \textit{coreference chains} (entity clusters).
-  \end{bluebox}
+  \end{tcolorbox}
 
-  \bigskip
-  \begin{exampleblock}{\normalsize Hindi Example}
-    \centering\normalsize
-    \textit{``\textbf{Ram} school gaya.\ \alert{Vah} bahut khush tha.\ \alert{Usne} doston se baat ki.''}\\[6pt]
-    (Ram went to school.\ \alert{He} was happy.\ \alert{He} talked to his friends.)\\[8pt]
-    \textbf{Entity Cluster:}\ \{Ram,\ Vah,\ Usne\}\ $\longrightarrow$\ all refer to the \emph{same person}
-  \end{exampleblock}
+  \vspace{6pt}
+  \begin{tcolorbox}[rbox={Hindi Example}]
+    \centering\small
+    \textit{``\textbf{Ram} school gaya.\ \textcolor{accentorange}{\textbf{Vah}} bahut khush tha.\
+    \textcolor{accentorange}{\textbf{Usne}} doston se baat ki.''}\\[4pt]
+    (Ram went to school.\ \textcolor{accentorange}{\textbf{He}} was happy.\
+    \textcolor{accentorange}{\textbf{He}} talked to his friends.)\\[5pt]
+    \textbf{Entity Cluster:} \{Ram,\ Vah,\ Usne\}
+    $\longrightarrow$ all refer to the \emph{same person}
+  \end{tcolorbox}
 
-  \bigskip
-  \begin{block}{\normalsize Why It Matters — Downstream Applications}
-    \centering\normalsize
-    Machine Translation \quad$\cdot$\quad
-    Question Answering \quad$\cdot$\quad
-    Summarisation\\[4pt]
-    Dialogue Systems \quad$\cdot$\quad
-    Information Extraction \quad$\cdot$\quad
-    Knowledge Graphs
-  \end{block}
+  \vspace{6pt}
+  \begin{tcolorbox}[gbox={Why It Matters — Downstream Applications}]
+    \centering\small
+    Machine Translation $\;\cdot\;$ Question Answering $\;\cdot\;$ Summarisation\\[2pt]
+    Dialogue Systems $\;\cdot\;$ Information Extraction $\;\cdot\;$ Knowledge Graphs
+  \end{tcolorbox}
 \end{frame}
 
-% ── Slide 1-2 ───────────────────────────────────────────────
 \begin{frame}{Why Hindi? The Challenge}
   \begin{columns}[T]
     \column{0.52\textwidth}
-      \begin{orangebox}{Hindi-Specific Challenges}
-        \begin{itemize}\setlength\itemsep{5pt}
-          \item \textbf{Morphological richness:}
-                Nouns, verbs, pronouns inflect for gender, number, case
-          \item \textbf{Pro-drop behaviour:}
-                Subject pronouns are routinely omitted
-          \item \textbf{Free word order:}
-                SOV canonical, but deviations are common
-          \item \textbf{Devanagari complexity:}
-                Conjuncts, matras, zero-width joiners
-          \item \textbf{Severe data scarcity:}
-                No OntoNotes-scale resource exists for Hindi
+      \begin{tcolorbox}[wbox={Hindi-Specific Challenges}]
+        \small
+        \begin{itemize}\setlength\itemsep{4pt}
+          \item \textbf{Morphological richness:} Nouns, verbs, pronouns
+                inflect for gender, number, case
+          \item \textbf{Pro-drop behaviour:} Subject pronouns routinely omitted
+          \item \textbf{Free word order:} SOV canonical, deviations common
+          \item \textbf{Devanagari complexity:} Conjuncts, matras,
+                zero-width joiners
+          \item \textbf{Severe data scarcity:} No OntoNotes-scale resource
+                for Hindi
         \end{itemize}
-      \end{orangebox}
+      \end{tcolorbox}
 
     \column{0.44\textwidth}
-      \begin{greenbox}{The Scale of the Gap}
-        \normalsize
+      \begin{tcolorbox}[rbox={The Scale of the Gap}]
+        \small
+        \renewcommand{\arraystretch}{1.35}
         \begin{tabular}{@{}ll@{}}
           \toprule
           \textbf{Language} & \textbf{Coref Data}\\
           \midrule
-          English & $\sim$10{,}000+ docs\\
-          Hindi   & $\approx$ 0 usable\\
+          English & ${\sim}10{,}000+$ docs\\
+          Hindi   & ${\approx}0$ usable\\
           \bottomrule
-        \end{tabular}\\[10pt]
+        \end{tabular}\\[8pt]
         \textbf{Hindi speakers:}\\
-        530M native $+$ 100M L2\\[6pt]
-        \alert{$\Rightarrow$ Critical NLP gap\\
-        for 600M+ users}
-      \end{greenbox}
+        530M native $+$ 100M L2\\[5pt]
+        \textcolor{red!70!black}{$\Rightarrow$ Critical NLP gap\\
+        for 600M$+$ users}
+      \end{tcolorbox}
   \end{columns}
 \end{frame}
 
-% ── Slide 1-3 ───────────────────────────────────────────────
 \begin{frame}{Our Two-Phase Research Journey}
-
   \begin{columns}[T]
     \column{0.48\textwidth}
-      \begin{orangebox}{Phase 1 — Scratch BERT (Failed)}
-        \normalsize
-        \textbf{Approach:} Train BERT from scratch on 172K Hindi\\
-        Wikipedia docs; cluster mentions by cosine similarity\\[8pt]
-        \textbf{Result:} \alert{Systematic failure}\\[4pt]
-        Pronouns (\textit{vah, usne}) \emph{never} linked to\\
-        correct antecedents at any threshold\\[8pt]
-        \textbf{Root cause:} Coreference is \textbf{referential},\\
-        not semantic — embedding similarity\\
-        is structurally the wrong signal
-      \end{orangebox}
+      \begin{tcolorbox}[wbox={Phase 1 — Scratch BERT (Failed)}]
+        \small
+        \textbf{Approach:} Train BERT from scratch on 172K Hindi
+        Wikipedia docs; cluster mentions by cosine similarity\\[6pt]
+        \textbf{Result:} \textcolor{red!70!black}{\textbf{Systematic failure}}\\[3pt]
+        Pronouns (\textit{vah, usne}) \emph{never} linked to
+        correct antecedents at any threshold\\[6pt]
+        \textbf{Root cause:} Coreference is \textbf{referential},
+        not semantic — embedding similarity is structurally the
+        wrong signal
+      \end{tcolorbox}
 
     \column{0.48\textwidth}
-      \begin{greenbox}{Phase 2 — Hybrid System (Succeeded)}
-        \normalsize
-        \textbf{Approach:} IndicBERTv2 contextual embeddings\\
-        $+$ hand-crafted Hindi linguistic features\\
-        $+$ Logistic Regression pairwise classifier\\
-        $+$ Union-Find cluster reconstruction\\[8pt]
-        \textbf{Dataset:} 76 manually annotated Hindi\\
-        documents (548 mention spans)\\
-        — created entirely from scratch\\[8pt]
-        \textbf{Result:} $\approx$\textbf{82\%} pairwise accuracy\\
-        \textcolor{green!55!black}{$+$11 pp from linguistic features}
-      \end{greenbox}
+      \begin{tcolorbox}[rbox={Phase 2 — Hybrid System (Succeeded)}]
+        \small
+        \textbf{Approach:} IndicBERTv2 contextual embeddings
+        $+$ Hindi linguistic features
+        $+$ Logistic Regression classifier
+        $+$ Union-Find clustering\\[6pt]
+        \textbf{Dataset:} 76 manually annotated Hindi documents
+        (548 mention spans) — created from scratch\\[6pt]
+        \textbf{Result:} ${\approx}$\textbf{82\%} pairwise accuracy\\
+        \textcolor{accentgreen}{\textbf{$+$11 pp} from linguistic features}
+      \end{tcolorbox}
   \end{columns}
-
-  \bigskip\centering\small
-  \textit{The Phase 1 failure is documented as a principled negative result —
-  itself a research contribution.}
+  \vspace{6pt}
+  \centering\small\textit{Phase 1 failure is documented as a principled
+  negative result — itself a research contribution.}
 \end{frame}
 
 
-% ============================================================
+% ════════════════════════════════════════════════════════
 %  SECTION 2 — MOTIVATION & OBJECTIVES
-% ============================================================
+% ════════════════════════════════════════════════════════
 \section{Motivation \& Objectives}
 
-% ── Slide 2-1 ───────────────────────────────────────────────
 \begin{frame}{Motivation}
   \begin{columns}[T]
     \column{0.48\textwidth}
-      \begin{block}{\normalsize The NLP Resource Gap}
-        \begin{itemize}\setlength\itemsep{6pt}
-          \item Hindi = 3rd most spoken language globally
-          \item English coreference: OntoNotes 5.0\\
-                with \textit{thousands} of annotated docs
-          \item Hindi coreference: effectively \textbf{zero} usable large-scale resources
-          \item MT, QA, summarisation all hit a hard\\
-                performance ceiling without coref
+      \begin{tcolorbox}[nbox={The NLP Resource Gap}]
+        \small
+        \begin{itemize}\setlength\itemsep{4pt}
+          \item Hindi = 3rd most-spoken language globally
+          \item English coreference: OntoNotes 5.0 with
+                \textit{thousands} of annotated docs
+          \item Hindi coreference: effectively \textbf{zero}
+                usable large-scale resources
+          \item MT, QA, summarisation all hit a hard ceiling
+                without coreference resolution
         \end{itemize}
-      \end{block}
+      \end{tcolorbox}
 
-      \vspace{8pt}
-      \begin{orangebox}{Why Generic Models Fail}
-        \normalsize
-        mBERT / XLM-RoBERTa:\\[4pt]
+      \vspace{6pt}
+      \begin{tcolorbox}[wbox={Why Generic Models Fail}]
+        \small
+        mBERT / XLM-RoBERTa:\\[3pt]
         \textbullet\ Over-segment Devanagari text\\
-        \textbullet\ Hindi signal diluted across 100+ languages\\
+        \textbullet\ Hindi signal diluted by 100$+$ languages\\
         \textbullet\ Never fine-tuned for Hindi coreference
-      \end{orangebox}
+      \end{tcolorbox}
 
     \column{0.48\textwidth}
-      \begin{greenbox}{Three Research Questions}
-        \normalsize
-        \textbf{Q1.} Can embedding similarity alone resolve\\
+      \begin{tcolorbox}[rbox={Three Research Questions}]
+        \small
+        \textbf{Q1.} Can embedding similarity alone resolve
         Hindi coreferences?\\
-        \hfill\alert{No — and we explain exactly why}\\[8pt]
-        \textbf{Q2.} Can a hybrid pipeline with IndicBERTv2\\
-        work on just 76 annotated documents?\\
-        \hfill\textcolor{green!55!black}{Yes}\\[8pt]
-        \textbf{Q3.} Do Hindi linguistic features add real\\
-        value over embeddings alone?\\
-        \hfill\textcolor{green!55!black}{+11 percentage points}
-      \end{greenbox}
+        \hfill\textcolor{red!70!black}{\textbf{No — and we explain why}}\\[6pt]
+        \textbf{Q2.} Can a hybrid pipeline with IndicBERTv2
+        work on just 76 docs?\\
+        \hfill\textcolor{accentgreen}{\textbf{Yes}}\\[6pt]
+        \textbf{Q3.} Do Hindi linguistic features add real value?\\
+        \hfill\textcolor{accentgreen}{\textbf{$+$11 percentage points}}
+      \end{tcolorbox}
 
-      \vspace{8pt}
-      \begin{bluebox}{Academic Value of Failure}
-        \normalsize
-        Documenting Phase 1 failure saves future\\
-        researchers from repeating the same mistake
-      \end{bluebox}
+      \vspace{6pt}
+      \begin{tcolorbox}[nbox={Academic Value of Failure}]
+        \small
+        Documenting Phase 1 failure \textbf{saves future
+        researchers} from repeating the same mistake
+      \end{tcolorbox}
   \end{columns}
 \end{frame}
 
-% ── Slide 2-2 ───────────────────────────────────────────────
 \begin{frame}{Project Objectives}
   \begin{columns}[T]
     \column{0.48\textwidth}
-      \begin{block}{\normalsize Primary Objectives}
-        \begin{enumerate}\setlength\itemsep{7pt}
-          \item Evaluate limits of unsupervised\\
+      \begin{tcolorbox}[nbox={Primary Objectives}]
+        \small
+        \begin{enumerate}\setlength\itemsep{5pt}
+          \item Evaluate limits of unsupervised
                 embedding-based coreference
-          \item Build a \textbf{functional end-to-end}\\
+          \item Build a \textbf{functional end-to-end}
                 Hindi coreference pipeline
-          \item Create a \textbf{manually annotated}\\
-                Hindi coreference dataset\\
-                (76 docs, 548 mention spans)
-          \item Design a \textbf{hybrid architecture}\\
-                combining IndicBERTv2 with\\
+          \item Create a \textbf{manually annotated}
+                Hindi dataset (76 docs, 548 spans)
+          \item Design a \textbf{hybrid architecture}
+                combining IndicBERTv2 with
                 hand-crafted Hindi features
         \end{enumerate}
-      \end{block}
+      \end{tcolorbox}
 
     \column{0.48\textwidth}
-      \begin{block}{\normalsize Technical Objectives}
-        \begin{itemize}\setlength\itemsep{6pt}
-          \item Train SentencePiece BPE tokenizer\\
+      \begin{tcolorbox}[nbox={Technical Objectives}]
+        \small
+        \begin{itemize}\setlength\itemsep{4pt}
+          \item Train SentencePiece BPE tokenizer
                 (vocab = 32,000)
-          \item Pretrain compact BERT-MLM on\\
+          \item Pretrain compact BERT-MLM on
                 172K Hindi Wikipedia docs
-          \item Extract IndicBERTv2 span embeddings\\
-                (mean pooling over tokens)
-          \item Engineer 11 Hindi-specific features
-          \item Train Logistic Regression classifier\\
-                (5-fold CV, balanced class weights)
+          \item Extract IndicBERTv2 span embeddings
+                (mean pooling)
+          \item Engineer 11 Hindi-specific pairwise features
+          \item Train Logistic Regression (5-fold CV,
+                balanced weights)
           \item Union-Find cluster reconstruction
-          \item Evaluate with Pairwise F1 + MUC
+          \item Evaluate: Pairwise F1 $+$ MUC score
         \end{itemize}
-      \end{block}
+      \end{tcolorbox}
   \end{columns}
 \end{frame}
 
 
-% ============================================================
+% ════════════════════════════════════════════════════════
 %  SECTION 3 — RELATED WORK
-% ============================================================
+% ════════════════════════════════════════════════════════
 \section{Related Work}
 
-% ── Slide 3-1 ───────────────────────────────────────────────
 \begin{frame}{Related Work — Language Models \& Indic NLP}
   \begin{columns}[T]
     \column{0.48\textwidth}
-      \begin{block}{\normalsize Transformer Language Models}
-        \begin{itemize}\setlength\itemsep{6pt}
+      \begin{tcolorbox}[nbox={Transformer Language Models}]
+        \small
+        \begin{itemize}\setlength\itemsep{5pt}
           \item \textbf{BERT} (Devlin et al., 2018)\\
                 Bidirectional MLM; both directions matter for coref
           \item \textbf{RoBERTa} (Liu et al., 2019)\\
-                More data + no NSP = better; confirms small scratch model will fail
+                More data $+$ no NSP $=$ better; explains why scratch model fails
           \item \textbf{Lauscher et al., 2020}\\
-                Small pretrained models produce weaker representations — validated our Phase 1 outcome
+                Small pretrained models $\Rightarrow$ weaker representations; validates Phase 1 outcome
         \end{itemize}
-      \end{block}
+      \end{tcolorbox}
 
     \column{0.48\textwidth}
-      \begin{block}{\normalsize Indic Language Models}
-        \begin{itemize}\setlength\itemsep{6pt}
-          \item \textbf{IndicBERT / IndicNLPSuite}\\
+      \begin{tcolorbox}[nbox={Indic Language Models}]
+        \small
+        \begin{itemize}\setlength\itemsep{5pt}
+          \item \textbf{IndicBERT / IndicNLPSuite}
                 (Kakwani et al., 2020)\\
                 First systematic Indic NLP infrastructure
           \item \textbf{IndicBERTv2} (Doddapaneni et al., 2023)\\
                 Larger IndicCorp v2; MLM-only; better Devanagari tokenisation\\
-                \textcolor{green!55!black}{\textbf{$\rightarrow$ Our chosen backbone}}
+                \textcolor{accentgreen}{\textbf{$\rightarrow$ Our chosen backbone}}
           \item \textbf{MuRIL} (Khanuja et al., 2021)\\
-                17 Indian languages + transliteration; too large for our hardware
+                17 Indian languages; too large for our hardware
         \end{itemize}
-      \end{block}
+      \end{tcolorbox}
   \end{columns}
 \end{frame}
 
-% ── Slide 3-2 ───────────────────────────────────────────────
 \begin{frame}{Related Work — Coreference Systems}
   \begin{columns}[T]
     \column{0.48\textwidth}
-      \begin{block}{\normalsize Classical \& Statistical Systems}
-        \begin{itemize}\setlength\itemsep{7pt}
+      \begin{tcolorbox}[nbox={Classical \& Statistical}]
+        \small
+        \begin{itemize}\setlength\itemsep{5pt}
           \item \textbf{Lappin \& Leass, 1994}\\
-                Salience-based pronoun resolution;\\
+                Salience-based pronoun resolution;
                 discourse proximity = key heuristic
           \item \textbf{Soon et al., 2001}\\
-                Pairwise mention-pair model;\\
-                \textit{conceptual basis for our Phase 2 classifier}
+                Pairwise mention-pair model;
+                \textit{conceptual basis for our classifier}
         \end{itemize}
-      \end{block}
+      \end{tcolorbox}
 
-      \vspace{8pt}
-      \begin{block}{\normalsize Hindi-Specific Work}
-        \begin{itemize}\setlength\itemsep{6pt}
+      \vspace{6pt}
+      \begin{tcolorbox}[nbox={Hindi-Specific}]
+        \small
+        \begin{itemize}\setlength\itemsep{4pt}
           \item \textbf{Mujadia et al., 2016}\\
-                Annotation guidelines + small CoNLL Hindi dataset
+                Guidelines $+$ small CoNLL Hindi dataset
           \item \textbf{Dakwale et al., 2013}\\
                 Rule-based Hindi anaphora resolution
         \end{itemize}
-      \end{block}
+      \end{tcolorbox}
 
     \column{0.48\textwidth}
-      \begin{block}{\normalsize Neural Coreference}
-        \begin{itemize}\setlength\itemsep{7pt}
+      \begin{tcolorbox}[nbox={Neural Coreference}]
+        \small
+        \begin{itemize}\setlength\itemsep{5pt}
           \item \textbf{Lee et al., 2017}\\
-                First end-to-end neural coref system;\\
-                joint mention + antecedent scoring
+                First end-to-end neural coref;
+                joint mention $+$ antecedent scoring
           \item \textbf{Joshi et al., 2019 — SpanBERT}\\
-                BERT representations for coref;\\
-                80\%+ F1 on English OntoNotes;\\
-                \textit{state-of-the-art for high-resource}
+                BERT spans for coref;
+                80\%$+$ F1 on English OntoNotes
         \end{itemize}
-      \end{block}
+      \end{tcolorbox}
 
-      \vspace{8pt}
-      \begin{orangebox}{The Resource Gap in Numbers}
-        \normalsize
-        English (Lee/Joshi): \textbf{tens of thousands} of training docs\\[4pt]
-        Our Hindi system: \textbf{76 docs}\\[4pt]
-        This gap explains our design choices
-      \end{orangebox}
+      \vspace{6pt}
+      \begin{tcolorbox}[wbox={The Resource Gap}]
+        \small
+        English (Lee/Joshi): \textbf{tens of thousands} of docs\\[3pt]
+        Our Hindi system: \textbf{76 docs}\\[3pt]
+        This gap \textbf{explains every design choice} we made
+      \end{tcolorbox}
   \end{columns}
 \end{frame}
 
-% ── Slide 3-3 ───────────────────────────────────────────────
 \begin{frame}{Low-Resource NLP — Our Design Alignment}
+  \vspace{2pt}
+  \begin{tcolorbox}[nbox={Strategy $\longleftrightarrow$ Our Implementation}]
+    \small
+    \renewcommand{\arraystretch}{1.5}
+    \begin{tabular}{p{3.5cm} p{3.8cm} p{4.0cm}}
+      \toprule
+      \textbf{Strategy} & \textbf{Literature} & \textbf{Our Implementation}\\
+      \midrule
+      Transfer learning & Hedderich et al., 2021 & IndicBERTv2 encoder backbone\\
+      Feature engineering & Lappin \& Leass, 1994 & 11 Hindi pairwise features\\
+      Simple classifiers & Hedderich et al., 2021 & Logistic Regression (not neural)\\
+      Manual corpus creation & Hedderich et al., 2021 & 76 docs, 548 annotations\\
+      \bottomrule
+    \end{tabular}
+  \end{tcolorbox}
 
-  \begin{center}
-  \renewcommand{\arraystretch}{1.55}
-  \begin{tabular}{p{3.8cm} p{4.2cm} p{4.2cm}}
-    \toprule
-    \textbf{Strategy} & \textbf{Literature Basis} & \textbf{Our Implementation}\\
-    \midrule
-    Transfer learning from pretrained model
-      & Hedderich et al., 2021
-      & IndicBERTv2 as contextual encoder backbone\\
-    Feature engineering for data efficiency
-      & Lappin \& Leass, 1994
-      & 11 Hindi-specific pairwise features\\
-    Simple classifiers in low-data regimes
-      & Hedderich et al., 2021
-      & Logistic Regression (not a neural scorer)\\
-    Manual corpus creation
-      & Hedderich et al., 2021
-      & 76 docs, 548 mention annotations\\
-    \bottomrule
-  \end{tabular}
-  \end{center}
-
-  \bigskip
-  \begin{bluebox}{Design Philosophy}
-    \normalsize
-    Every Phase 2 decision is \textbf{grounded in established low-resource NLP literature} —
-    not an arbitrary choice.
-  \end{bluebox}
+  \vspace{8pt}
+  \begin{tcolorbox}[rbox={Design Philosophy}]
+    Every Phase 2 design decision is \textbf{grounded in the
+    established low-resource NLP literature} — not an arbitrary choice.
+  \end{tcolorbox}
 \end{frame}
 
 
-% ============================================================
+% ════════════════════════════════════════════════════════
 %  SECTION 4 — METHODOLOGY
-% ============================================================
+% ════════════════════════════════════════════════════════
 \section{Methodology}
 
-% ── Slide 4-1 ───────────────────────────────────────────────
 \begin{frame}{Phase 1 — Scratch BERT Setup}
   \begin{columns}[T]
     \column{0.48\textwidth}
-      \begin{block}{\normalsize Corpus \& Tokenizer}
-        \normalsize
-        \textbf{Corpus:} 172,000 Hindi Wikipedia documents (Kaggle)\\[8pt]
-        \textbf{Tokenizer:} SentencePiece BPE\\[6pt]
-        \begin{center}
-        \renewcommand{\arraystretch}{1.35}
-        \begin{tabular}{ll}
+      \begin{tcolorbox}[nbox={Corpus \& Tokenizer}]
+        \small
+        \textbf{Corpus:} 172,000 Hindi Wikipedia docs (Kaggle)\\[5pt]
+        \textbf{Tokenizer:} SentencePiece BPE\\[4pt]
+        \renewcommand{\arraystretch}{1.3}
+        \begin{tabular}{@{}ll@{}}
           \toprule
           Algorithm    & BPE\\
           Vocab size   & 32,000\\
           Coverage     & 0.9995\\
           \bottomrule
-        \end{tabular}
-        \end{center}
-        \vspace{6pt}
-        \textit{Why SentencePiece?}\\
-        Operates on raw Unicode — no whitespace pre-tokenisation needed for Devanagari
-      \end{block}
+        \end{tabular}\\[6pt]
+        \textit{Why SentencePiece?} Operates on raw Unicode —
+        no whitespace pre-tokenisation needed for Devanagari
+      \end{tcolorbox}
 
     \column{0.48\textwidth}
-      \begin{block}{\normalsize BERT Model Configuration}
-        \normalsize
-        Compact architecture (free-tier GPU):
-        \begin{center}
-        \renewcommand{\arraystretch}{1.35}
-        \begin{tabular}{ll}
+      \begin{tcolorbox}[nbox={BERT Model Configuration}]
+        \small
+        Compact architecture (free-tier GPU):\\[4pt]
+        \renewcommand{\arraystretch}{1.3}
+        \begin{tabular}{@{}ll@{}}
           \toprule
           Hidden size    & 256\\
           Layers         & 4\\
@@ -484,243 +448,239 @@
           Max sequence   & 128 tokens\\
           Dropout        & 0.1\\
           \bottomrule
-        \end{tabular}
-        \end{center}
-        \vspace{6pt}
-        \textbf{Objective:} MLM (15\% random token masking)\\
-        No NSP objective
-      \end{block}
+        \end{tabular}\\[6pt]
+        \textbf{Objective:} MLM (15\% token masking), no NSP
+      \end{tcolorbox}
   \end{columns}
 \end{frame}
 
-% ── Slide 4-2 ───────────────────────────────────────────────
 \begin{frame}{Phase 1 — Why It Failed}
   \begin{columns}[T]
     \column{0.50\textwidth}
-      \begin{orangebox}{Failure Summary}
-        \normalsize
-        \renewcommand{\arraystretch}{1.40}
-        \begin{tabular}{p{3.0cm} p{3.8cm}}
+      \begin{tcolorbox}[wbox={Failure Summary}]
+        \small
+        \renewcommand{\arraystretch}{1.35}
+        \begin{tabular}{p{2.6cm} p{3.3cm}}
           \toprule
-          \textbf{Failure Mode} & \textbf{Observation}\\
+          \textbf{Failure} & \textbf{Observation}\\
           \midrule
           Pronoun linking & Not linked at \textit{any} threshold\\
-          Threshold tuning & No good precision-recall trade-off\\
+          Threshold tuning & No good P-R trade-off\\
           Spurious clusters & Low threshold merges wrong spans\\
-          Entity name variation & Same entity unreliably merged\\
+          Entity variation & Same entity unreliably merged\\
           Cross-sentence & No entity-tracking mechanism\\
           \bottomrule
         \end{tabular}
-      \end{orangebox}
+      \end{tcolorbox}
 
-      \vspace{10pt}
-      \begin{bluebox}{Key Metric}
-        \centering\large
+      \vspace{6pt}
+      \begin{tcolorbox}[nbox={Key Metric}]
+        \centering\small
         Precision on pronoun-antecedent pairs\\
-        at threshold 0.7:\\[6pt]
-        \alert{\textbf{$<$ 30\%}}\\[4pt]
-        \normalsize (barely above random chance)
-      \end{bluebox}
+        at cosine threshold 0.7:\\[4pt]
+        \textcolor{red!70!black}{\Large\textbf{$< 30\%$}}\\[2pt]
+        \small (barely above random chance)
+      \end{tcolorbox}
 
     \column{0.46\textwidth}
-      \begin{block}{\normalsize Root Cause Analysis}
-        \normalsize
-        \textbf{Ram} (proper noun) and \textbf{vah} (pronoun)\\
-        have \alert{zero semantic similarity}\\
-        — yet are coreferent.\\[10pt]
-        Coreference is \textbf{referential}, not semantic.\\[10pt]
-        Embedding cosine similarity detects\\
-        semantic relatedness — which is\\
-        \textbf{irrelevant} to referential identity.\\[10pt]
-        This failure is \textit{systematic}: no amount\\
-        of threshold tuning can fix it.
-      \end{block}
+      \begin{tcolorbox}[nbox={Root Cause Analysis}]
+        \small
+        \textbf{Ram} (proper noun) and \textbf{vah} (pronoun)
+        have \textcolor{red!70!black}{\textbf{zero semantic similarity}}
+        — yet are coreferent.\\[8pt]
+        Coreference is \textbf{referential}, not semantic.\\[8pt]
+        Embedding similarity detects semantic relatedness —
+        which is \textbf{irrelevant} to referential identity.\\[8pt]
+        This failure is \textit{systematic}: no amount of
+        threshold tuning can fix it.
+      \end{tcolorbox}
 
-      \vspace{8pt}
-      \begin{greenbox}{Outcome}
-        \normalsize
+      \vspace{6pt}
+      \begin{tcolorbox}[rbox={Outcome}]
+        \small
         Phase 1 formally discontinued.\\
         Findings documented as a\\
         \textbf{principled negative result}.
-      \end{greenbox}
+      \end{tcolorbox}
   \end{columns}
 \end{frame}
 
-% ── Slide 4-3 ───────────────────────────────────────────────
+
 \begin{frame}{Phase 2 — Hybrid System Pipeline}
+  \begin{columns}[T]
+    \column{0.44\textwidth}
+      \begin{tcolorbox}[nbox={4-Stage Pipeline}]
+        \small
+        \begin{enumerate}\setlength\itemsep{5pt}
+          \item \textbf{Mention Representation}\\
+                IndicBERTv2 mean-pooling over span tokens:
+                $\mathbf{m}_{[i,j]}=\frac{1}{j{-}i{+}1}\sum_{k=i}^{j}\mathbf{h}_k$
+          \item \textbf{Feature Construction}\\
+                Embedding features $+$ 11 Hindi linguistic features
+          \item \textbf{Pairwise Classification}\\
+                Logistic Regression: coreferent vs.\ not
+          \item \textbf{Cluster Reconstruction}\\
+                Union-Find on predicted positive pairs
+        \end{enumerate}
+      \end{tcolorbox}
 
-  \begin{center}
-  \begin{tikzpicture}[
-    node distance = 0.55cm,
-    box/.style = {rectangle, rounded corners=5pt,
-                  draw=blue!60!black, fill=blue!10!white,
-                  text width=4.0cm, minimum height=0.85cm,
-                  align=center, font=\normalsize},
-    ann/.style = {font=\small, text=blue!55!black,
-                  text width=5.8cm, align=left},
-    arr/.style = {-{Stealth[length=6pt]}, thick, blue!60!black}
-  ]
-    \node[box]                  (A) {\textbf{Input Text}\\+ Mention Spans};
-    \node[box, below=of A]      (B) {\textbf{IndicBERTv2 Encoder}\\Contextual Embeddings};
-    \node[box, below=of B]      (C) {\textbf{Feature Engineering}\\Embedding + Hindi Linguistic};
-    \node[box, below=of C]      (D) {\textbf{Logistic Regression}\\Pairwise Classifier};
-    \node[box, below=of D]      (E) {\textbf{Union-Find}\\Cluster Reconstruction};
-    \node[box, below=of E,
-          fill=green!10!white,
-          draw=green!50!black]  (F) {\textbf{Output: Entity Clusters}};
+    \column{0.52\textwidth}
+      \begin{tikzpicture}[
+        every node/.style={font=\scriptsize},
+        node distance=0.45cm,
+        box/.style={draw=techblue, fill=techblue!10, rounded corners=3pt,
+                    minimum height=0.65cm, text width=3.6cm,
+                    align=center, inner sep=3pt},
+        outbox/.style={draw=accentgreen, fill=accentgreen!12, rounded corners=3pt,
+                       minimum height=0.65cm, text width=3.6cm,
+                       align=center, inner sep=3pt, font=\scriptsize\bfseries},
+        arr/.style={-{Stealth[length=5pt]}, thick, darktext!60},
+        ann/.style={font=\tiny, text=techblue!80, text width=3.2cm, align=left}
+      ]
+        \node[box]                 (A) {\textbf{Input Text}\\+ Mention Spans};
+        \node[box, below=of A]     (B) {\textbf{IndicBERTv2 Encoder}\\Contextual Embeddings};
+        \node[box, below=of B]     (C) {\textbf{Feature Engineering}\\Embedding + Hindi Linguistic};
+        \node[box, below=of C]     (D) {\textbf{Logistic Regression}\\Pairwise Classifier};
+        \node[box, below=of D]     (E) {\textbf{Union-Find}\\Cluster Reconstruction};
+        \node[outbox, below=of E]  (F) {\textbf{Output: Entity Clusters}};
 
-    \draw[arr] (A)--(B);
-    \draw[arr] (B)--(C);
-    \draw[arr] (C)--(D);
-    \draw[arr] (D)--(E);
-    \draw[arr] (E)--(F);
+        \draw[arr] (A)--(B);
+        \draw[arr] (B)--(C);
+        \draw[arr] (C)--(D);
+        \draw[arr] (D)--(E);
+        \draw[arr] (E)--(F);
 
-    \node[ann, right=0.6cm of B]
-      {Mean-pool last hidden states:\\
-       $\mathbf{m}_{[i,j]} = \frac{1}{j-i+1}\sum_{k=i}^{j}\mathbf{h}_k$};
-    \node[ann, right=0.6cm of C]
-      {11 features: cosine sim, pronoun flags,\\
-       plurality, clause heuristic, head match…};
-    \node[ann, right=0.6cm of D]
-      {Balanced class weights, L2, L-BFGS,\\
-       5-fold stratified cross-validation};
-    \node[ann, right=0.6cm of E]
-      {Merge predicted positive pairs\\
-       into connected components};
-  \end{tikzpicture}
-  \end{center}
+        \node[ann, right=0.3cm of C]
+          {11 features:\\cosine sim, pronoun flags,\\plurality, clause heuristic};
+        \node[ann, right=0.3cm of D]
+          {Balanced weights,\\L2 reg, 5-fold CV};
+      \end{tikzpicture}
+  \end{columns}
 \end{frame}
 
-% ── Slide 4-4 ───────────────────────────────────────────────
 \begin{frame}{Dataset — Created Entirely From Scratch}
   \begin{columns}[T]
     \column{0.50\textwidth}
-      \begin{orangebox}{No Public Hindi Coref Dataset Existed!}
-        \normalsize
+      \begin{tcolorbox}[wbox={No Public Hindi Coref Dataset Existed!}]
+        \small
         The team annotated 76 documents manually over several weeks.
-      \end{orangebox}
+      \end{tcolorbox}
 
-      \vspace{8pt}
-      \begin{center}
-      \renewcommand{\arraystretch}{1.40}
-      \begin{tabular}{ll}
+      \vspace{6pt}
+      \small
+      \renewcommand{\arraystretch}{1.4}
+      \begin{tabular}{@{}ll@{}}
         \toprule
-        \textbf{Property}        & \textbf{Value}\\
+        \textbf{Property} & \textbf{Value}\\
         \midrule
-        Total documents          & 76\\
-        Mention annotations      & 548\\
-        Avg.\ mentions / doc     & 7.2\\
-        Source domains           & News, Wikipedia, Narratives\\
-        Script                   & Devanagari (Hindi)\\
-        Mention types            & 4 categories\\
+        Total documents & 76\\
+        Mention annotations & 548\\
+        Avg.\ mentions / doc & 7.2\\
+        Source domains & News, Wikipedia, Narratives\\
+        Script & Devanagari (Hindi)\\
+        Mention types & 4 categories\\
         \bottomrule
       \end{tabular}
-      \end{center}
 
-      \vspace{8pt}
-      \begin{bluebox}{Annotation Procedure}
-        \normalsize
-        1.\ Read each document fully\\
-        2.\ Mark all coreferring NPs and pronouns\\
+      \vspace{6pt}
+      \begin{tcolorbox}[nbox={Annotation Steps}]
+        \small
+        1.\ Read document fully\\
+        2.\ Mark all coreferring NPs \& pronouns\\
         3.\ Assign shared cluster IDs\\
         4.\ Store as structured JSON
-      \end{bluebox}
+      \end{tcolorbox}
 
     \column{0.46\textwidth}
-      \begin{block}{\normalsize Mention Type Taxonomy}
-        \normalsize
-        \renewcommand{\arraystretch}{1.45}
-        \begin{tabular}{p{2.4cm} p{3.6cm}}
+      \begin{tcolorbox}[nbox={Mention Type Taxonomy}]
+        \small
+        \renewcommand{\arraystretch}{1.35}
+        \begin{tabular}{p{2.2cm} p{3.2cm}}
           \toprule
           \textbf{Type} & \textbf{Meaning}\\
           \midrule
-          \texttt{proper\_noun}    & Named entity (person, place, org)\\
-          \texttt{common\_noun}    & Definite / indefinite NP\\
-          \texttt{pronoun}         & Personal or demonstrative pronoun\\
-          \texttt{nominal\_phrase} & Descriptive NP referring by role\\
+          \texttt{proper\_noun}    & Named entity (person, org)\\
+          \texttt{common\_noun}    & Definite/indefinite NP\\
+          \texttt{pronoun}         & Personal/demonstrative\\
+          \texttt{nominal\_phrase} & Descriptive NP by role\\
           \bottomrule
         \end{tabular}
-      \end{block}
+      \end{tcolorbox}
 
-      \vspace{10pt}
-      \begin{orangebox}{Known Limitations}
-        \normalsize
-        \textbullet\ Small size (76 documents)\\
-        \textbullet\ No formal inter-annotator\\
-        \phantom{\textbullet\ }agreement (Kappa) measured\\
-        \textbullet\ Skewed toward formal written Hindi\\[4pt]
-        \textit{All limitations honestly reported in the project report.}
-      \end{orangebox}
+      \vspace{6pt}
+      \begin{tcolorbox}[wbox={Known Limitations}]
+        \small
+        $\bullet$\ Small size (76 documents)\\
+        $\bullet$\ No formal inter-annotator agreement (Kappa)\\
+        $\bullet$\ Skewed toward formal written Hindi\\[3pt]
+        \textit{All honestly reported in the project report.}
+      \end{tcolorbox}
   \end{columns}
 \end{frame}
 
-% ── Slide 4-5 ───────────────────────────────────────────────
+
 \begin{frame}{Hindi Linguistic Feature Engineering}
   \begin{columns}[T]
-    \column{0.54\textwidth}
-      \begin{block}{\normalsize Feature Vector for Mention Pair $(m_a,\,m_b)$}
-        \normalsize
-        \renewcommand{\arraystretch}{1.40}
-        \begin{tabular}{p{3.2cm} p{4.2cm}}
+    \column{0.56\textwidth}
+      \begin{tcolorbox}[nbox={Feature Vector for Mention Pair $(m_a,\,m_b)$}]
+        \small
+        \renewcommand{\arraystretch}{1.35}
+        \begin{tabular}{p{3.0cm} p{4.0cm}}
           \toprule
-          \textbf{Feature}          & \textbf{Description}\\
+          \textbf{Feature} & \textbf{Description}\\
           \midrule
-          Cosine similarity         & $\cos(\mathbf{m}_a,\mathbf{m}_b)$\\
-          Embedding difference      & $|\mathbf{m}_a - \mathbf{m}_b|$ (reduced)\\
-          Pronoun flag ($m_a$)      & 1 if \textit{vah, yah, main, hum, ve}\\
-          Pronoun flag ($m_b$)      & 1 if $m_b$ is a Hindi pronoun\\
-          Object pronoun            & 1 if \textit{use, inhe, unhe}\\
-          Plural pronoun            & 1 if \textit{ve, hum, ye}\\
-          Sentence distance         & Normalised gap between mentions\\
-          Mention length ratio      & $|m_a|\,/\,|m_b|$ (tokens)\\
-          Clause heuristic          & Same local subject clause?\\
-          Head word match           & Identical stem?\\
-          Mention compatibility     & Gender/number agreement signal\\
+          Cosine similarity & $\cos(\mathbf{m}_a,\mathbf{m}_b)$\\
+          Embedding diff & $|\mathbf{m}_a - \mathbf{m}_b|$ (reduced)\\
+          Pronoun flag ($m_a$) & 1 if \textit{vah, yah, main, hum, ve}\\
+          Pronoun flag ($m_b$) & 1 if $m_b$ is a Hindi pronoun\\
+          Object pronoun & 1 if \textit{use, inhe, unhe}\\
+          Plural pronoun & 1 if \textit{ve, hum, ye}\\
+          Sentence distance & Normalised mention gap\\
+          Mention length ratio & $|m_a|\,/\,|m_b|$ (tokens)\\
+          Clause heuristic & Same local subject clause?\\
+          Head word match & Identical stem?\\
+          Mention compatibility & Gender/number agreement\\
           \bottomrule
         \end{tabular}
-      \end{block}
+      \end{tcolorbox}
 
-    \column{0.42\textwidth}
-      \begin{bluebox}{Why Linguistic Features?}
-        \normalsize
-        Embedding similarity alone\\
-        \textbf{cannot detect}:\\[6pt]
+    \column{0.40\textwidth}
+      \begin{tcolorbox}[wbox={Why Not Embeddings Alone?}]
+        \small
         \textit{Ram} (proper noun)\\
-        $\leftrightarrow$ \textit{vah} (pronoun)\\[4pt]
-        These share \alert{zero semantic overlap}\\
-        — yet are clearly coreferent.\\[8pt]
+        $\leftrightarrow$ \textit{vah} (pronoun)\\[3pt]
+        Share \textcolor{red!70!black}{\textbf{zero}} semantic overlap
+        — yet clearly coreferent.\\[6pt]
         \textbf{Pronoun flag} signals:\\
-        ``This mention is likely coreferent\\
-        with a proximate nominal''\\[8pt]
+        ``coreferent with proximate nominal''\\[4pt]
         \textbf{Plural flag} prevents:\\
-        \textit{ve} (they) from resolving\\
-        to a singular antecedent
-      \end{bluebox}
+        \textit{ve} (they) $\to$ singular antecedent
+      \end{tcolorbox}
 
-      \vspace{8pt}
-      \begin{greenbox}{Ablation Preview}
-        \centering\normalsize
-        Embedding only\hfill$\approx$71\%\\
-        + Linguistic features\hfill\textbf{$\approx$82\%}\\[4pt]
-        \large\textcolor{green!55!black}{\textbf{+11 pp gain}}
-      \end{greenbox}
+      \vspace{6pt}
+      \begin{tcolorbox}[rbox={Ablation Preview}]
+        \small
+        Embedding only\hfill ${\approx}71\%$\\
+        $+$ Linguistic features\hfill \textbf{${\approx}82\%$}\\[4pt]
+        \centering
+        \textcolor{accentgreen}{\large\textbf{$+11$ pp gain}}
+      \end{tcolorbox}
   \end{columns}
 \end{frame}
 
-% ── Slide 4-6 ───────────────────────────────────────────────
 \begin{frame}[fragile]{Cluster Reconstruction — Union-Find}
   \begin{columns}[T]
     \column{0.52\textwidth}
-      \begin{block}{\normalsize Python Implementation}
-        \begin{lstlisting}
+      \begin{tcolorbox}[nbox={Python Implementation}]
+\begin{lstlisting}
 class UnionFind:
     def __init__(self, n):
         self.parent = list(range(n))
 
     def find(self, x):
         while self.parent[x] != x:
-            self.parent[x] = self.parent[
-                                self.parent[x]]
+            self.parent[x] = \
+              self.parent[self.parent[x]]
             x = self.parent[x]
         return x
 
@@ -736,410 +696,426 @@ def build_clusters(mentions, pos_pairs):
     clusters = {}
     for idx in range(len(mentions)):
         clusters.setdefault(
-            uf.find(idx), []).append(mentions[idx])
+          uf.find(idx),[]).append(mentions[idx])
     return list(clusters.values())
-        \end{lstlisting}
-      \end{block}
+\end{lstlisting}
+      \end{tcolorbox}
 
     \column{0.44\textwidth}
-      \begin{bluebox}{How It Works}
-        \normalsize
-        \textbf{Step 1:} Each mention starts\\
-        in its own singleton set\\[6pt]
-        \textbf{Step 2:} For each predicted\\
-        positive pair $(m_a,m_b)$: merge sets\\[6pt]
-        \textbf{Step 3:} Connected components\\
-        become the entity clusters
-      \end{bluebox}
+      \begin{tcolorbox}[rbox={How It Works}]
+        \small
+        \textbf{Step 1:} Each mention starts
+        in its own singleton set\\[4pt]
+        \textbf{Step 2:} For each predicted
+        positive pair $(m_a,m_b)$: merge sets\\[4pt]
+        \textbf{Step 3:} Connected components
+        become entity clusters
+      \end{tcolorbox}
 
-      \vspace{8pt}
-      \begin{orangebox}{Known Weakness}
-        \normalsize
-        \textbf{Transitive error propagation:}\\[4pt]
-        If $m_a$--$m_b$ \emph{and} $m_b$--$m_c$ are both wrongly predicted coreferent, then $m_a$ and $m_c$ get merged even though they should not be.\\[4pt]
-        One wrong prediction cascades.
-      \end{orangebox}
+      \vspace{6pt}
+      \begin{tcolorbox}[wbox={Known Weakness}]
+        \small
+        \textbf{Transitive error propagation:}\\[3pt]
+        If $m_a$--$m_b$ \emph{and} $m_b$--$m_c$ are
+        both wrongly predicted coreferent,
+        $m_a$ and $m_c$ get merged even though
+        they should not.\\[3pt]
+        One wrong prediction cascades through
+        the cluster.
+      \end{tcolorbox}
 
-      \vspace{8pt}
-      \begin{block}{\normalsize Compute Environment}
-        \normalsize
+      \vspace{6pt}
+      \begin{tcolorbox}[gbox={Compute Environment}]
+        \small
         Platform: Google Colab / Kaggle\\
         GPU: T4 / P100 (free tier)\\
-        Language: Python 3.10\\
-        Libraries: transformers, sklearn,\\
-        \hspace{5.5em}sentencepiece, torch
-      \end{block}
+        Python 3.10; transformers, sklearn
+      \end{tcolorbox}
   \end{columns}
 \end{frame}
 
 
-% ============================================================
+% ════════════════════════════════════════════════════════
 %  SECTION 5 — EXPERIMENTAL RESULTS
-% ============================================================
+% ════════════════════════════════════════════════════════
 \section{Experimental Results}
 
-% ── Slide 5-1 ───────────────────────────────────────────────
 \begin{frame}{Phase 1 Results — Embedding Experiments}
   \begin{columns}[T]
     \column{0.50\textwidth}
-      \begin{block}{\normalsize Positive Observations}
-        \normalsize
-        Semantically coherent noun categories\\
-        (body parts, country names, professions)\\
-        showed \textbf{moderate spatial clustering}\\
-        in embedding space.\\[8pt]
-        This confirms that MLM training did\\
-        capture some distributional structure.
-      \end{block}
+      \begin{tcolorbox}[nbox={Positive Observations}]
+        \small
+        Semantically coherent noun categories
+        (body parts, country names, professions)
+        showed \textbf{moderate spatial clustering}
+        in embedding space.\\[5pt]
+        Confirms MLM training captured
+        some distributional structure.
+      \end{tcolorbox}
 
-      \vspace{10pt}
-      \begin{orangebox}{Critical Failure — Pronouns}
-        \normalsize
-        Hindi pronouns (\textit{vah, yah, main, hum})\\
-        formed a loose cluster, but:\\[6pt]
-        \textbullet\ No separation by number, case, or role\\
-        \textbullet\ No link to correct antecedents\\[8pt]
+      \vspace{6pt}
+      \begin{tcolorbox}[wbox={Critical Failure — Pronouns}]
+        \small
+        Hindi pronouns (\textit{vah, yah, main, hum})
+        formed a loose cluster, but:\\[4pt]
+        $\bullet$\ No separation by number, case, or role\\
+        $\bullet$\ No link to correct antecedents\\[6pt]
         \centering
         Precision on pronoun-antecedent pairs\\
-        at similarity threshold 0.7:\\[4pt]
-        \alert{\Large\textbf{$<$ 30\%}}\\[4pt]
-        \normalsize Barely above random chance
-      \end{orangebox}
+        at threshold 0.7:\\[3pt]
+        \textcolor{red!70!black}{\Large\textbf{$< 30\%$}}\\[2pt]
+        \small Barely above random chance
+      \end{tcolorbox}
 
     \column{0.46\textwidth}
-      \begin{block}{\normalsize Failure Mode Summary}
-        \renewcommand{\arraystretch}{1.45}
-        \begin{tabular}{p{2.8cm} p{3.4cm}}
+      \begin{tcolorbox}[wbox={Failure Mode Summary}]
+        \small
+        \renewcommand{\arraystretch}{1.3}
+        \begin{tabular}{p{2.5cm} p{3.0cm}}
           \toprule
-          \textbf{Failure Mode} & \textbf{Observation}\\
+          \textbf{Failure} & \textbf{Observation}\\
           \midrule
-          Pronoun-antecedent & Not linked at any threshold\\
-          Threshold tuning   & No good P-R balance\\
-          Spurious clusters  & Low threshold merges wrong spans\\
-          Entity variation   & Same entity, diff.\ surface form\\
-          Cross-sentence     & No entity-tracking mechanism\\
+          Pronoun linking & Not linked at any threshold\\
+          Threshold tuning & No good P-R balance\\
+          Spurious clusters & Low threshold wrong merges\\
+          Entity variation & Same entity not reliably merged\\
+          Cross-sentence & No entity tracking\\
           \bottomrule
         \end{tabular}
-      \end{block}
+      \end{tcolorbox}
 
-      \vspace{10pt}
-      \begin{greenbox}{Phase 1 Conclusion}
-        \normalsize
-        Failure is \textbf{systematic and fundamental} — not fixable by tuning.\\[6pt]
-        Reflects a structural mismatch between the task requirement and the method.\\[6pt]
+      \vspace{6pt}
+      \begin{tcolorbox}[rbox={Phase 1 Conclusion}]
+        \small
+        Failure is \textbf{systematic and fundamental}
+        — not fixable by tuning.\\[3pt]
+        Structural mismatch between task and method.\\[3pt]
         \textbf{Phase 1 formally discontinued.}
-      \end{greenbox}
+      \end{tcolorbox}
   \end{columns}
 \end{frame}
 
-% ── Slide 5-2 ───────────────────────────────────────────────
 \begin{frame}{Phase 2 Results — Classification Accuracy}
   \begin{columns}[T]
     \column{0.50\textwidth}
-      \begin{block}{\normalsize Pairwise Classification (5-Fold CV)}
-        \renewcommand{\arraystretch}{1.50}
+      \begin{tcolorbox}[nbox={Pairwise Classification (5-Fold CV)}]
+        \small
+        \renewcommand{\arraystretch}{1.4}
         \begin{tabular}{lccc}
           \toprule
-          \textbf{Class}   & \textbf{Prec.} & \textbf{Rec.} & \textbf{F1}\\
+          \textbf{Class} & \textbf{P} & \textbf{R} & \textbf{F1}\\
           \midrule
-          Non-coreferent (0)         & High    & High    & High\\
-          \alert{Coreferent (1)}     & Moderate& Moderate& Moderate\\
+          Non-coref (0) & High & High & High\\
+          \textcolor{accentorange}{\textbf{Coref (1)}} & Mod. & Mod. & Mod.\\
           \midrule
-          \multicolumn{1}{l}{\textbf{Overall Accuracy}}
-            & \multicolumn{3}{c}{\large\textbf{\alert{$\approx$ 82\%}}}\\
+          \multicolumn{4}{c}{\textbf{Overall Accuracy:}
+            \textcolor{accentorange}{\Large\textbf{${\approx}82\%$}}}\\
           \bottomrule
         \end{tabular}
-      \end{block}
+      \end{tcolorbox}
 
-      \vspace{10pt}
-      \begin{bluebox}{Interpreting 82\%}
-        \normalsize
-        Non-coreferent pairs vastly outnumber coreferent pairs.\\[6pt]
-        A ``predict-all-negative'' classifier would also score high.\\[6pt]
-        The key is \textbf{genuine performance on the minority coreferent class} — achieved here despite class imbalance via balanced weighting.
-      \end{bluebox}
+      \vspace{6pt}
+      \begin{tcolorbox}[nbox={Interpreting 82\%}]
+        \small
+        Non-coreferent pairs vastly outnumber
+        coreferent pairs.\\[3pt]
+        A ``predict-all-negative'' classifier
+        would also score high.\\[3pt]
+        Key: \textbf{genuine performance on the
+        minority coreferent class} — achieved
+        via balanced class weighting.
+      \end{tcolorbox}
 
     \column{0.46\textwidth}
-      \begin{greenbox}{Ablation Study}
-        \centering\normalsize
-        \renewcommand{\arraystretch}{1.45}
+      \begin{tcolorbox}[rbox={Ablation Study}]
+        \small\centering
+        \renewcommand{\arraystretch}{1.4}
         \begin{tabular}{lc}
           \toprule
-          \textbf{Feature Set}          & \textbf{Accuracy}\\
+          \textbf{Feature Set} & \textbf{Acc.}\\
           \midrule
-          Embedding similarity only     & $\approx$ 71\%\\
-          \textbf{+ Linguistic features}& \textbf{$\approx$ 82\%}\\
+          Embedding only & ${\approx}71\%$\\
+          \textbf{$+$ Linguistic features} & \textbf{${\approx}82\%$}\\
           \bottomrule
-        \end{tabular}\\[10pt]
-        \Large\textcolor{green!55!black}{\textbf{+11 pp}}\\[4pt]
-        \normalsize from pronoun flags, plurality,\\
+        \end{tabular}\\[6pt]
+        \textcolor{accentgreen}{\Large\textbf{$+11$ pp}}\\[2pt]
+        \small from pronoun flags, plurality\\
         and clause heuristics
-      \end{greenbox}
+      \end{tcolorbox}
 
-      \vspace{10pt}
-      \begin{block}{\normalsize MUC Coreference Evaluation}
-        \renewcommand{\arraystretch}{1.45}
+      \vspace{6pt}
+      \begin{tcolorbox}[nbox={MUC Coreference Evaluation}]
+        \small
+        \renewcommand{\arraystretch}{1.35}
         \begin{tabular}{lc}
           \toprule
-          \textbf{System}   & \textbf{MUC F1}\\
+          \textbf{System} & \textbf{MUC F1}\\
           \midrule
           Phase 1 (clustering) & Low\\
           \textbf{Phase 2 (ours)} & \textbf{Moderate}\\
           \bottomrule
-        \end{tabular}\\[6pt]
-        Clear cluster-level improvement over baseline.
-      \end{block}
+        \end{tabular}\\[4pt]
+        Clear cluster-level improvement
+        over Phase 1 baseline.
+      \end{tcolorbox}
   \end{columns}
 \end{frame}
 
-% ── Slide 5-3 ───────────────────────────────────────────────
 \begin{frame}{Qualitative Examples — Success \& Failure}
-
-  \begin{greenbox}{Successful Resolution \checkmark}
-    \normalsize
-    \textbf{Input:}\ \textit{``Ram school gaya.\ Vah bahut khush tha.\ Usne apne doston se baat ki.''}\\
-    \hspace{3em}(Ram went to school.\ He was very happy.\ He talked to his friends.)\\[6pt]
-    \textbf{Gold:}\ \{Ram, Vah, Usne\}\qquad
-    \textbf{Predicted:}\ \{Ram, Vah, Usne\}\ \textcolor{green!55!black}{\textbf{Correct}}\\[4pt]
+  \begin{tcolorbox}[rbox={Successful Resolution \checkmark}]
+    \small
+    \textbf{Input:}
+    \textit{``Ram school gaya.\ Vah bahut khush tha.\ Usne apne doston se baat ki.''}\\
+    \hspace{1.5em}(Ram went to school.\ He was very happy.\ He talked to his friends.)\\[4pt]
+    \textbf{Gold:}\ \{Ram, Vah, Usne\}\quad
+    \textbf{Predicted:}\ \{Ram, Vah, Usne\}\quad
+    \textcolor{accentgreen}{\textbf{Correct}}\\[3pt]
     \textit{Why it worked:} Pronoun flags fired for \textit{Vah} and \textit{Usne};
     clause heuristic confirmed shared local subject with \textit{Ram}.
-  \end{greenbox}
+  \end{tcolorbox}
 
-  \bigskip
+  \vspace{8pt}
 
-  \begin{orangebox}{Failure Case $\times$}
-    \normalsize
-    \textbf{Input:}\ \textit{``Seema aur Priya dono school gayi.\ Vah bahut thak gayi thi.''}\\
-    \hspace{3em}(Seema and Priya both went to school.\ She was very tired.)\\[6pt]
-    \textbf{Gold:}\ \{Seema aur Priya, Vah\}\ (collective antecedent)\\
-    \textbf{Predicted:}\ \{Seema, Vah\}\ \alert{\textbf{Incorrect}}\ — resolved to first-mentioned entity only\\[4pt]
-    \textit{Why it failed:} The plurality check does not handle \textbf{conjoined noun phrases};
-    no mechanism exists for tracking collective antecedents across sentence boundaries.
-  \end{orangebox}
+  \begin{tcolorbox}[wbox={Failure Case $\boldsymbol{\times}$}]
+    \small
+    \textbf{Input:}
+    \textit{``Seema aur Priya dono school gayi.\ Vah bahut thak gayi thi.''}\\
+    \hspace{1.5em}(Seema and Priya both went to school.\ She was very tired.)\\[4pt]
+    \textbf{Gold:}\ \{Seema aur Priya, Vah\}\ (collective)\ \quad
+    \textbf{Predicted:}\ \{Seema, Vah\}\
+    \textcolor{red!70!black}{\textbf{Incorrect}}\\[3pt]
+    \textit{Why it failed:} Plurality check does not handle
+    \textbf{conjoined noun phrases}; no collective antecedent tracking.
+  \end{tcolorbox}
 \end{frame}
 
 
-% ============================================================
+% ════════════════════════════════════════════════════════
 %  SECTION 6 — CONTRIBUTIONS
-% ============================================================
+% ════════════════════════════════════════════════════════
 \section{Contributions}
 
-% ── Slide 6-1 ───────────────────────────────────────────────
 \begin{frame}{Key Contributions of This Project}
   \begin{columns}[T]
     \column{0.48\textwidth}
-      \begin{greenbox}{Research Contributions}
-        \begin{enumerate}\setlength\itemsep{7pt}
+      \begin{tcolorbox}[rbox={Research Contributions}]
+        \small
+        \begin{enumerate}\setlength\itemsep{5pt}
           \item \textbf{Documented failure analysis}\\
-                Principled negative result explaining \textit{why} embedding-based unsupervised clustering fails for Hindi coref
+                Explains \textit{why} embedding-based
+                clustering fails for Hindi coref
           \item \textbf{Manually annotated dataset}\\
-                76 documents, 548 mention spans, 4 mention types — created entirely from scratch
+                76 docs, 548 spans, 4 types —
+                created entirely from scratch
           \item \textbf{Working end-to-end pipeline}\\
-                IndicBERTv2 + Hindi linguistic features + Logistic Regression + Union-Find
+                IndicBERTv2 $+$ Hindi features $+$
+                LR $+$ Union-Find
         \end{enumerate}
-      \end{greenbox}
+      \end{tcolorbox}
 
     \column{0.48\textwidth}
-      \begin{greenbox}{Empirical Contributions}
-        \begin{enumerate}\setlength\itemsep{7pt}
+      \begin{tcolorbox}[rbox={Empirical Contributions}]
+        \small
+        \begin{enumerate}\setlength\itemsep{5pt}
           \setcounter{enumi}{3}
           \item \textbf{Validated transfer learning}\\
-                IndicBERTv2 outperforms scratch-trained model even at tiny fine-tuning scale
+                IndicBERTv2 outperforms scratch-trained
+                model even at tiny fine-tuning scale
           \item \textbf{Feature importance evidence}\\
-                Hand-crafted pronoun, plurality, and clause features add \alert{+11 pp accuracy} over embeddings alone
+                Pronoun, plurality, clause features
+                add \textcolor{red!70!black}{\textbf{$+$11 pp}}
+                over embeddings alone
           \item \textbf{Honest evaluation}\\
-                MUC coreference scoring + pairwise F1 + qualitative failure analysis reported transparently
+                MUC $+$ pairwise F1 $+$ qualitative
+                failure analysis reported transparently
         \end{enumerate}
-      \end{greenbox}
+      \end{tcolorbox}
   \end{columns}
 \end{frame}
 
-
-% ============================================================
+% ════════════════════════════════════════════════════════
 %  SECTION 7 — CONCLUSION & LIMITATIONS
-% ============================================================
+% ════════════════════════════════════════════════════════
 \section{Conclusion \& Limitations}
 
-% ── Slide 7-1 ───────────────────────────────────────────────
 \begin{frame}{Conclusion — What We Achieved}
   \begin{columns}[T]
     \column{0.50\textwidth}
-      \begin{block}{\normalsize Results Summary}
-        \begin{itemize}\setlength\itemsep{7pt}
-          \item \textbf{Phase 1} (172K docs, unsupervised)\\
-                Failed systematically; failure documented
-          \item \textbf{Phase 2} (76 docs, supervised hybrid)\\
-                Functional coreference pipeline for Hindi
-          \item \textbf{$\approx$82\%} overall pairwise accuracy
-          \item \textbf{+11 pp} from Hindi linguistic features
-          \item \textbf{MUC score} shows clear improvement\\
-                over Phase 1 at cluster level
+      \begin{tcolorbox}[nbox={Results Summary}]
+        \small
+        \begin{itemize}\setlength\itemsep{4pt}
+          \item \textbf{Phase 1} failed systematically;
+                failure documented as a research finding
+          \item \textbf{Phase 2} — functional Hindi
+                coreference pipeline
+          \item \textbf{${\approx}82\%$} overall pairwise accuracy
+          \item \textbf{$+$11 pp} from Hindi linguistic features
+          \item \textbf{MUC score} shows clear improvement
+                over Phase 1 baseline
         \end{itemize}
-      \end{block}
+      \end{tcolorbox}
 
-      \vspace{8pt}
-      \begin{bluebox}{Lessons Learned}
-        \begin{itemize}\setlength\itemsep{5pt}
-          \item Task formulation $>$ data volume
-          \item Pretrained knowledge invaluable even at tiny scale
-          \item Feature engineering still matters in transformer era
-          \item Documenting failure = valid research contribution
-          \item Dataset creation = genuine community resource
-        \end{itemize}
-      \end{bluebox}
+      \vspace{6pt}
+      \begin{tcolorbox}[rbox={Lessons Learned}]
+        \small
+        \textbf{L1:} Task formulation $>$ data volume\\[2pt]
+        \textbf{L2:} Pretrained knowledge invaluable even at tiny scale\\[2pt]
+        \textbf{L3:} Feature engineering still matters in transformer era\\[2pt]
+        \textbf{L4:} Documenting failure = valid research\\[2pt]
+        \textbf{L5:} Dataset creation = genuine contribution
+      \end{tcolorbox}
 
     \column{0.46\textwidth}
-      \begin{orangebox}{Limitations (Honestly Reported)}
-        \begin{enumerate}\setlength\itemsep{6pt}
-          \item \textbf{Dataset size:}\\
-                76 docs is small; generalisation\\
-                beyond annotated domains is uncertain
-          \item \textbf{No automatic mention detection:}\\
-                System needs pre-supplied spans;\\
-                not truly end-to-end
-          \item \textbf{Classifier capacity:}\\
-                Logistic regression has a linear ceiling
-          \item \textbf{Transitive Union-Find errors:}\\
-                One wrong pair cascades through\\
-                the entire cluster
-          \item \textbf{Evaluation coverage:}\\
-                Only MUC + pairwise; no B$^3$/CEAF;\\
-                full CoNLL F1 not computed
-          \item \textbf{No inter-annotator agreement}\\
-                (Cohen's Kappa not measured)
+      \begin{tcolorbox}[wbox={Limitations (Honestly Reported)}]
+        \small
+        \begin{enumerate}\setlength\itemsep{4pt}
+          \item \textbf{Dataset size:} 76 docs is small;
+                generalisation uncertain
+          \item \textbf{No auto mention detection:}
+                System needs pre-supplied spans
+          \item \textbf{Classifier ceiling:}
+                LR is linear; non-linear interactions missed
+          \item \textbf{Union-Find transitivity:}
+                One wrong pair cascades through cluster
+          \item \textbf{Evaluation:} Only MUC $+$ pairwise;
+                no B$^3$/CEAF; no CoNLL F1
+          \item \textbf{No inter-annotator agreement}
+                (Kappa not measured)
         \end{enumerate}
-      \end{orangebox}
+      \end{tcolorbox}
   \end{columns}
 \end{frame}
 
-
-% ============================================================
+% ════════════════════════════════════════════════════════
 %  SECTION 8 — FUTURE WORK
-% ============================================================
+% ════════════════════════════════════════════════════════
 \section{Future Work}
 
-% ── Slide 8-1 ───────────────────────────────────────────────
 \begin{frame}{Future Work — Prioritised Roadmap}
   \begin{columns}[T]
     \column{0.48\textwidth}
-      \begin{block}{\normalsize High Priority (Highest Impact)}
-        \begin{enumerate}\setlength\itemsep{7pt}
+      \begin{tcolorbox}[nbox={High Priority}]
+        \small
+        \begin{enumerate}\setlength\itemsep{5pt}
           \item \textbf{Automatic Mention Detection}\\
-                Fine-tune IndicBERTv2 as BIO\\
-                sequence labeller\\
+                Fine-tune IndicBERTv2 as BIO labeller\\
                 $\Rightarrow$ True end-to-end pipeline
           \item \textbf{Neural Pairwise Scorer}\\
-                Replace LR with feed-forward net\\
-                or end-to-end IndicBERTv2\\
+                Replace LR with FFN or fine-tuned IndicBERTv2\\
                 $\Rightarrow$ Break the linear ceiling
           \item \textbf{Dataset Expansion}\\
-                76 $\rightarrow$ 300--500 documents\\
-                Add Cohen's Kappa $\geq 0.7$\\
-                Diversify domains; publish open-source
+                76 $\to$ 300–500 docs; Cohen's Kappa ${\geq}0.7$;\\
+                diversify domains; publish open-source
         \end{enumerate}
-      \end{block}
+      \end{tcolorbox}
 
     \column{0.48\textwidth}
-      \begin{block}{\normalsize Medium \& Long-Term}
-        \begin{enumerate}\setlength\itemsep{7pt}
+      \begin{tcolorbox}[nbox={Medium \& Long-Term}]
+        \small
+        \begin{enumerate}\setlength\itemsep{5pt}
           \setcounter{enumi}{3}
           \item \textbf{Full CoNLL Evaluation}\\
-                Add B$^3$ + CEAF via \texttt{coval}\\
-                $\Rightarrow$ Enable cross-system comparison
+                B$^3$ $+$ CEAF via \texttt{coval}\\
+                $\Rightarrow$ Cross-system comparison
           \item \textbf{Morphological Analyser}\\
                 Explicit gender/number labels\\
-                $\Rightarrow$ Fix plurality failure cases
+                $\Rightarrow$ Fix plurality failures
           \item \textbf{SpanBERT-style Architecture}\\
-                (Lee et al.\ + IndicBERTv2 backbone)
+                (Lee et al.\ $+$ IndicBERTv2 backbone)
           \item \textbf{Cross-lingual Transfer}\\
-                Zero-shot from English OntoNotes\\
-                via XLM-RoBERTa / MuRIL
+                Zero-shot from English OntoNotes
           \item \textbf{Downstream Integration}\\
-                Hindi QA, summarisation,\\
-                relation extraction
+                Hindi QA, summarisation, KG construction
         \end{enumerate}
-      \end{block}
+      \end{tcolorbox}
   \end{columns}
 \end{frame}
 
-
-% ============================================================
+% ════════════════════════════════════════════════════════
 %  SECTION 9 — REFERENCES
-% ============================================================
+% ════════════════════════════════════════════════════════
 \section{References}
 
-% ── Slide 9-1 ───────────────────────────────────────────────
 \begin{frame}{References}
   \begin{columns}[T]
     \column{0.50\textwidth}
-      \small
-      \textbf{Language Models}\\[3pt]
-      \textbullet\ Devlin et al.\ (2018). BERT. \textit{arXiv:1810.04805}\\
-      \textbullet\ Liu et al.\ (2019). RoBERTa. \textit{arXiv:1907.11692}\\
-      \textbullet\ Lauscher et al.\ (2020). Zero-to-hero. \textit{EMNLP}\\[8pt]
-      \textbf{Indic Language Models}\\[3pt]
-      \textbullet\ Kakwani et al.\ (2020). IndicNLPSuite. \textit{EMNLP}\\
-      \textbullet\ Doddapaneni et al.\ (2023). IndicBERTv2. \textit{arXiv}\\
-      \textbullet\ Khanuja et al.\ (2021). MuRIL. \textit{arXiv}\\[8pt]
-      \textbf{Coreference Systems}\\[3pt]
-      \textbullet\ Lappin \& Leass (1994). Pronoun resolution.\ \textit{CL}\\
-      \textbullet\ Soon et al.\ (2001). ML coreference.\ \textit{CL 27(4)}\\
-      \textbullet\ Lee et al.\ (2017). End-to-end coref.\ \textit{EMNLP}\\
-      \textbullet\ Joshi et al.\ (2019). SpanBERT.\ \textit{TACL 8}\\
+      \begin{tcolorbox}[gbox={Language Models \& Tools}]
+        \scriptsize
+        $[1]$ Devlin et al.\ (2018). BERT. \textit{arXiv:1810.04805}\\
+        $[2]$ Liu et al.\ (2019). RoBERTa. \textit{arXiv:1907.11692}\\
+        $[3]$ Lauscher et al.\ (2020). Zero-to-hero. \textit{EMNLP}\\
+        $[4]$ Wolf et al.\ (2020). HuggingFace. \textit{EMNLP Demo}
+      \end{tcolorbox}
+
+      \vspace{5pt}
+      \begin{tcolorbox}[gbox={Indic Language Models}]
+        \scriptsize
+        $[5]$ Kakwani et al.\ (2020). IndicNLPSuite. \textit{EMNLP}\\
+        $[6]$ Doddapaneni et al.\ (2023). IndicBERTv2. \textit{arXiv}\\
+        $[7]$ Khanuja et al.\ (2021). MuRIL. \textit{arXiv}
+      \end{tcolorbox}
+
+      \vspace{5pt}
+      \begin{tcolorbox}[gbox={Hindi NLP}]
+        \scriptsize
+        $[8]$ Mujadia et al.\ (2016). Hindi coref. \textit{COLING}\\
+        $[9]$ Dakwale et al.\ (2013). Hindi anaphora. \textit{IJCNLP}
+      \end{tcolorbox}
 
     \column{0.46\textwidth}
-      \small
-      \textbf{Coreference Evaluation}\\[3pt]
-      \textbullet\ Vilain et al.\ (1995). MUC scoring.\ \textit{MUC-6}\\
-      \textbullet\ Moosavi \& Strube (2016). Metrics.\ \textit{ACL}\\[8pt]
-      \textbf{Hindi NLP}\\[3pt]
-      \textbullet\ Mujadia et al.\ (2016). Hindi coref.\ \textit{COLING}\\
-      \textbullet\ Dakwale et al.\ (2013). Hindi anaphora.\ \textit{IJCNLP}\\[8pt]
-      \textbf{Low-Resource NLP}\\[3pt]
-      \textbullet\ Hedderich et al.\ (2021). Survey.\ \textit{NAACL}\\[8pt]
-      \textbf{Tools}\\[3pt]
-      \textbullet\ Wolf et al.\ (2020). HuggingFace Transformers.\\
-      \hspace{1.2em}\textit{EMNLP System Demonstrations}\\
+      \begin{tcolorbox}[gbox={Coreference Systems}]
+        \scriptsize
+        $[10]$ Lappin \& Leass (1994). \textit{Comp.\ Ling.}\\
+        $[11]$ Soon et al.\ (2001). ML coref. \textit{CL 27(4)}\\
+        $[12]$ Lee et al.\ (2017). E2E coref. \textit{EMNLP}\\
+        $[13]$ Joshi et al.\ (2019). SpanBERT. \textit{TACL 8}\\
+        $[14]$ Vilain et al.\ (1995). MUC scoring. \textit{MUC-6}\\
+        $[15]$ Moosavi \& Strube (2016). Metrics. \textit{ACL}
+      \end{tcolorbox}
+
+      \vspace{5pt}
+      \begin{tcolorbox}[gbox={Low-Resource NLP}]
+        \scriptsize
+        $[16]$ Hedderich et al.\ (2021). Survey. \textit{NAACL}
+      \end{tcolorbox}
   \end{columns}
 \end{frame}
 
-% ============================================================
-%  THANK YOU SLIDE
-% ============================================================
+% ════════════════════════════════════════════════════════
+%  THANK YOU
+% ════════════════════════════════════════════════════════
 \begin{frame}
-  \vspace{0.6cm}
+  \vspace{0.4cm}
   \begin{center}
-    {\Huge\bfseries Thank You}\\[0.7cm]
-    {\Large\itshape Questions \& Discussion}
+    {\Huge\bfseries\color{midnightblue} Thank You}\\[0.6cm]
+    {\large\color{darktext!70} Questions \& Discussion}
   \end{center}
 
-  \bigskip
+  \vspace{0.5cm}
   \begin{columns}[c]
     \column{0.52\textwidth}
-      \begin{bluebox}{Project Summary}
-        \normalsize
-        \textbf{Task:} Hindi Coreference Resolution\\[4pt]
-        \textbf{Approach:} IndicBERTv2 $+$ Hindi linguistic\\
-        \hspace{4em}features $+$ LR $+$ Union-Find\\[4pt]
-        \textbf{Dataset:} 76 docs, 548 mentions\\
-        \hspace{4em}(created from scratch)\\[4pt]
-        \textbf{Result:} $\approx$82\% pairwise accuracy\\[4pt]
-        \textbf{Key finding:} Linguistic features\\
-        \hspace{4em}add +11 pp over embeddings alone
-      \end{bluebox}
+      \begin{tcolorbox}[nbox={Project Summary}]
+        \small
+        \textbf{Task:} Hindi Coreference Resolution\\[3pt]
+        \textbf{System:} IndicBERTv2 $+$ Hindi Features
+        $+$ LR $+$ Union-Find\\[3pt]
+        \textbf{Dataset:} 76 docs, 548 spans (from scratch)\\[3pt]
+        \textbf{Result:} ${\approx}82\%$ pairwise accuracy\\[3pt]
+        \textbf{Key finding:} Linguistic features $+$11 pp
+        over embeddings alone
+      \end{tcolorbox}
 
     \column{0.44\textwidth}
-      \begin{block}{\normalsize Team}
-        \normalsize
-        Himraj Doley\ \ (202202023131)\\
-        Subham Saha\ \ \ (202202021067)\\
-        Mohd Zaid\ \ \ \ \ (202202023127)\\
-        Nipujyoti Rabha (202202021053)\\[6pt]
+      \begin{tcolorbox}[rbox={Team}]
+        \small
+        Himraj Doley \hfill 202202023131\\
+        Subham Saha \hfill 202202021067\\
+        Mohd Zaid \hfill 202202023127\\
+        Nipujyoti Rabha \hfill 202202021053\\[5pt]
         \textit{Supervisor:}\\
-        Dr.\ Apurbalal Senapati\\
-        (HOD, Dept.\ of CSE)\\[6pt]
-        CIT Kokrajhar\ ---\ May 2026
-      \end{block}
+        Dr.\ Apurbalal Senapati (HOD, CSE)\\[3pt]
+        CIT Kokrajhar — May 2026
+      \end{tcolorbox}
   \end{columns}
 \end{frame}
 
