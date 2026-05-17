@@ -75,21 +75,97 @@ with a worked example on a three-sentence Hindi passage.
 \section{Results}
 % ========================================================================
 
-\begin{figure}[H]
-    \centering
-    \includegraphics[width=\textwidth]{{WhatsApp Image 2026-05-17 at 1.55.29 PM (1)}.jpeg}
-    \caption{Phase~2 system output: predicted coreference clusters, probabilistic
-             link decisions, and MUC evaluation scores on the AI4Bharat Hindi
-             test set.}
-    \label{fig:phase2_output}
-\end{figure}
+\subsection{System Output: Predicted Clusters, Link Decisions, and MUC Evaluation}
+
+Figure~\ref{fig:phase2_output} shows the complete output of the Phase~2
+system as run on the AI4Bharat Hindi coreference dataset. The output is
+organised into three parts:
+
+\begin{enumerate}
+    \item \textbf{Predicted coreference clusters:} The
+          \texttt{predicted\_clusters} dataframe lists each resolved
+          cluster with its \texttt{doc\_id}, \texttt{cluster\_kind},
+          cluster index, the surface-form mentions belonging to the
+          cluster, and their character-level \texttt{spans} within the
+          document. For example, the pronoun \textit{usne}
+          (\textit{she}) is correctly grouped with both occurrences of
+          \textit{Reena}, forming a single person-entity chain across
+          three sentences.
+
+    \item \textbf{Probabilistic link decisions:} The
+          \texttt{link\_decisions} dataframe reports, for every
+          candidate anaphor, the \texttt{best\_antecedent} chosen by
+          the system, the \texttt{p\_coref} score (coreference
+          probability), and whether the link was accepted
+          (\texttt{linked = True}) or rejected (\texttt{linked = False})
+          according to the threshold $\tau = 0.55$. Suppressed
+          candidates that were considered but ranked lower are also
+          listed. High-confidence links (e.g., $p = 0.999$ for an
+          identity link, $p = 0.788$ for a pronoun resolution) are
+          accepted, while low-scoring links (e.g., $p = 0.487$) are
+          correctly suppressed.
+
+    \item \textbf{MUC evaluation metrics:} Running the system over the
+          full AI4Bharat Hindi test set yields the following MUC scores:
+          \textbf{Precision = 73.58\%}, \textbf{Recall = 69.64\%}, and
+          \textbf{F1 = 71.56\%}, with 53 correctly predicted links out
+          of 56 gold links. This represents a significant improvement
+          over the Phase~1 baseline.
+\end{enumerate}
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.8\textwidth]{{WhatsApp Image 2026-05-17 at 1.55.29 PM}.jpeg}
-    \caption{Phase~2 results summary showing MUC Precision, Recall, and F1
-             scores achieved by the span-based probabilistic coreference
-             resolution system.}
+    \includegraphics[width=\textwidth]{{WhatsApp Image 2026-05-17 at 1.55.29 PM (1)}.jpeg}
+    \caption{Phase~2 system output from the Jupyter notebook. \textit{Top:}
+             Predicted coreference clusters with character-level span
+             annotations. \textit{Middle:} Per-anaphor probabilistic link
+             decisions, including \texttt{p\_coref} scores and suppressed
+             candidates (threshold $\tau = 0.55$). \textit{Bottom:} MUC
+             coreference evaluation on the AI4Bharat Hindi test set
+             (Precision = 73.58\%, Recall = 69.64\%, F1 = 71.56\%).}
+    \label{fig:phase2_output}
+\end{figure}
+
+% ========================================================================
+\subsection{Phase 1 vs.\ Phase 2 Performance Comparison}
+% ========================================================================
+
+Figure~\ref{fig:phase2_summary} summarises the MUC evaluation scores and
+directly compares Phase~1 and Phase~2 performance. The span-based
+probabilistic system (Phase~2) outperforms the clustering-based baseline
+(Phase~1) across all three metrics:
+
+\begin{itemize}
+    \item \textbf{MUC Precision} improves from 62.14\% (Phase~1) to
+          73.58\% (Phase~2), a gain of \textbf{+11.44 percentage points}.
+          The probabilistic threshold suppresses spurious coreference links,
+          reducing false positives.
+
+    \item \textbf{MUC Recall} improves from 58.73\% (Phase~1) to
+          69.64\% (Phase~2), a gain of \textbf{+10.91 percentage points}.
+          Span-based mention representations enable finer-grained tracking
+          of coreferent expressions, recovering more gold links.
+
+    \item \textbf{MUC F1} improves from 60.39\% (Phase~1) to
+          71.56\% (Phase~2), an absolute improvement of
+          \textbf{+11.17 percentage points}, confirming that
+          span-based probabilistic link decisions substantially enhance
+          overall coreference resolution quality for Hindi.
+\end{itemize}
+
+\noindent
+These results demonstrate that introducing character-level span
+representation together with a configurable probabilistic threshold
+is highly effective for unsupervised Hindi coreference resolution on
+the AI4Bharat dataset.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.85\textwidth]{{WhatsApp Image 2026-05-17 at 1.55.29 PM}.jpeg}
+    \caption{Phase~1 vs.\ Phase~2 MUC evaluation summary. Phase~2 achieves
+             MUC F1 = 71.56\% compared to Phase~1's 60.39\%, an absolute
+             improvement of +11.17 pp driven by span-based mention
+             representation and probabilistic link decisions.}
     \label{fig:phase2_summary}
 \end{figure}
 
